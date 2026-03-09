@@ -6,8 +6,9 @@
  * Protocol was built on.
  */
 
+import { stringify } from "yaml";
 import { JS_BLOCK } from "../comment-formats.js";
-import type { TestMetadata } from "../types.js";
+import type { StubRenderInput, TestMetadata } from "../types.js";
 import type { StackAdapter } from "./adapter.js";
 import { registerAdapter } from "./adapter.js";
 
@@ -71,6 +72,49 @@ function generateStub(metadata: TestMetadata): string {
 }
 
 // =============================================================================
+// Stub Rendering (for ingestion pipeline)
+// =============================================================================
+
+function slugify(value: string): string {
+	return value
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-|-$/g, "");
+}
+
+function renderStub(input: StubRenderInput): { filePath: string; content: string } {
+	const dir = input.requirementDir ?? "tests/requirements";
+	const slug = slugify(input.summary);
+	const metadata = {
+		req: input.id,
+		type: "unit",
+		status: "pending",
+		area: input.area,
+		summary: input.summary,
+		acceptance: input.acceptance,
+		tags: ["surface-protocol", "target-repo"],
+		source: input.source,
+		changed: [
+			{
+				date: input.date,
+				commit: "pending",
+				note:
+					input.kind === "problem"
+						? "Captured via surface problem"
+						: "Captured via surface capture",
+			},
+		],
+	};
+
+	const examples = input.acceptance.map((criterion) => `  it.todo("${criterion}")`).join("\n\n");
+
+	return {
+		filePath: `${dir}/${slug}.test.ts`,
+		content: `/*---\n${stringify(metadata).trimEnd()}\n---*/\n\nimport { describe, it } from "vitest";\n\ndescribe("${input.id}: ${input.summary}", () => {\n${examples}\n});\n`,
+	};
+}
+
+// =============================================================================
 // Adapter Definition
 // =============================================================================
 
@@ -89,6 +133,10 @@ export const typescriptVitestAdapter: StackAdapter = {
 	commentFormat: JS_BLOCK,
 
 	stubTemplate: generateStub,
+
+	renderStub,
+
+	defaultRequirementDir: "tests/requirements",
 
 	assertionPatterns: [
 		/expect\s*\(/,

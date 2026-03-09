@@ -5,8 +5,9 @@
  * comment format where each YAML line is prefixed with "# ".
  */
 
+import { stringify } from "yaml";
 import { HASH_BLOCK } from "../comment-formats.js";
-import type { TestMetadata } from "../types.js";
+import type { StubRenderInput, TestMetadata } from "../types.js";
 import type { StackAdapter } from "./adapter.js";
 import { registerAdapter } from "./adapter.js";
 
@@ -70,6 +71,59 @@ function generateStub(metadata: TestMetadata): string {
 }
 
 // =============================================================================
+// Stub Rendering (for ingestion pipeline)
+// =============================================================================
+
+function slugify(value: string): string {
+	return value
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-|-$/g, "");
+}
+
+function commentYaml(yaml: string): string {
+	return yaml
+		.trimEnd()
+		.split("\n")
+		.map((line) => `# ${line}`)
+		.join("\n");
+}
+
+function renderStub(input: StubRenderInput): { filePath: string; content: string } {
+	const dir = input.requirementDir ?? "spec/requirements";
+	const slug = slugify(input.summary);
+	const metadata = {
+		req: input.id,
+		type: "unit",
+		status: "pending",
+		area: input.area,
+		summary: input.summary,
+		acceptance: input.acceptance,
+		tags: ["surface-protocol", "target-repo"],
+		source: input.source,
+		changed: [
+			{
+				date: input.date,
+				commit: "pending",
+				note:
+					input.kind === "problem"
+						? "Captured via surface problem"
+						: "Captured via surface capture",
+			},
+		],
+	};
+
+	const examples = input.acceptance
+		.map((criterion) => `  it ${JSON.stringify(criterion)} do\n    skip "TODO"\n  end`)
+		.join("\n\n");
+
+	return {
+		filePath: `${dir}/${slug}_spec.rb`,
+		content: `# ---\n${commentYaml(stringify(metadata))}\n# ---\nRSpec.describe ${JSON.stringify(`${input.id}: ${input.summary}`)} do\n${examples}\nend\n`,
+	};
+}
+
+// =============================================================================
 // Adapter Definition
 // =============================================================================
 
@@ -82,6 +136,10 @@ export const rubyRspecAdapter: StackAdapter = {
 	commentFormat: HASH_BLOCK,
 
 	stubTemplate: generateStub,
+
+	renderStub,
+
+	defaultRequirementDir: "spec/requirements",
 
 	assertionPatterns: [
 		// RSpec expectations

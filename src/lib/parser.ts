@@ -187,7 +187,7 @@ const DEFAULT_PATTERNS = [
  * Accepts optional patterns to override the defaults.
  * Falls back to `find` if not in a git repo.
  */
-function findTestFiles(dir: string, patterns?: string[]): string[] {
+export function findTestFiles(dir: string, patterns?: string[]): string[] {
 	const globPatterns = patterns
 		? patterns.map((p) => `"${p.replace(/\*\*\//g, "")}"`)
 		: DEFAULT_PATTERNS;

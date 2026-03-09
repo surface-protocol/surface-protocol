@@ -410,6 +410,47 @@ export interface Constraints {
 }
 
 // =============================================================================
+// Ingestion Inputs
+// =============================================================================
+
+export type SourceKind = SourceReference["type"];
+
+/** Input for capturing a new requirement */
+export interface CaptureInput {
+	dir: string;
+	summary: string;
+	area?: string;
+	acceptance: string[];
+	sourceKind: SourceKind;
+	sourceRef: string;
+	sourceUrl?: string;
+	kind?: "capture" | "problem";
+}
+
+/** Input for persisting a learning */
+export interface LearnInput {
+	dir: string;
+	title: string;
+	summary: string;
+	sourceKind?: SourceKind;
+	sourceRef?: string;
+	insights?: string[];
+	fileName?: string;
+}
+
+/** Input for rendering a test stub from an adapter */
+export interface StubRenderInput {
+	id: string;
+	summary: string;
+	area?: string;
+	acceptance: string[];
+	source: SourceReference;
+	date: string;
+	requirementDir?: string;
+	kind: "capture" | "problem";
+}
+
+// =============================================================================
 // Validation Results
 // =============================================================================
 

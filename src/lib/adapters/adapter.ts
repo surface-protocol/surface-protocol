@@ -6,7 +6,7 @@
  * assertion detection, and lifecycle heuristics.
  */
 
-import type { TestMetadata } from "../types.js";
+import type { StubRenderInput, TestMetadata } from "../types.js";
 
 // =============================================================================
 // Comment Format
@@ -63,6 +63,16 @@ export interface StackAdapter {
 	 * Returns the full file content including frontmatter and test skeleton.
 	 */
 	stubTemplate: (metadata: TestMetadata) => string;
+
+	/**
+	 * Render a test stub with a computed file path.
+	 * Used by the ingestion pipeline to create stubs in the right location.
+	 * Returns both the file path (relative to project root) and the content.
+	 */
+	renderStub: (input: StubRenderInput) => { filePath: string; content: string };
+
+	/** Default directory for requirement stubs (relative to project root) */
+	defaultRequirementDir: string;
 
 	/** Regex patterns that indicate assertions exist in a test body */
 	assertionPatterns: RegExp[];

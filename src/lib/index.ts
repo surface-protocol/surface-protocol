@@ -43,11 +43,14 @@ export {
 	groupRequirementsByArea,
 	normalizeAcceptance,
 } from "./formatters.js";
+// Ingestion
+export { archiveRequirement, captureRequirement, persistLearning } from "./ingest.js";
 // Parser
 export {
 	extractAllYamlBlocks,
 	extractRequirementId,
 	extractYamlFrontmatter,
+	findTestFiles,
 	getMissingFields,
 	getRequirementCategory,
 	hasRequiredFields,
@@ -56,6 +59,9 @@ export {
 	parseTestFileContent,
 	parseTestFileContentBasic,
 } from "./parser.js";
+export type { ReconcileResult } from "./reconcile.js";
+// Reconciliation
+export { reconcileSources } from "./reconcile.js";
 // Schemas
 export {
 	ConstraintsSchema,
@@ -77,6 +83,7 @@ export type {
 	AdoptionReport,
 	AudienceTag,
 	BypassCategory,
+	CaptureInput,
 	ChangeEntry,
 	ClassifiedCommit,
 	CommitClassification,
@@ -91,6 +98,7 @@ export type {
 	ImplementationState,
 	ImplementationStatus,
 	JourneyStep,
+	LearnInput,
 	LifecycleStage,
 	LifecycleStatus,
 	Override,
@@ -101,7 +109,9 @@ export type {
 	Requirement,
 	RequirementStatus,
 	RoutedSignal,
+	SourceKind,
 	SourceReference,
+	StubRenderInput,
 	SurfaceMap,
 	SurfaceMapStats,
 	TestLocation,
