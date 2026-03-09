@@ -1,0 +1,9 @@
+{
+	"adapter": "typescript-vitest",
+	"testFilePatterns": ["**/*.e2e.fixture.ts"],
+	"output": {
+		"surfaceJson": ".surface/output/surface.json",
+		"surfaceMd": ".surface/output/SURFACE.md",
+		"featureDocs": ".surface/output/docs/features"
+	}
+}

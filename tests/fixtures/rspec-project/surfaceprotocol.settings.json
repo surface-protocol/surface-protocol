@@ -1,0 +1,9 @@
+{
+	"adapter": "ruby-rspec",
+	"testFilePatterns": ["**/*_spec.rb"],
+	"output": {
+		"surfaceJson": ".surface/output/surface.json",
+		"surfaceMd": ".surface/output/SURFACE.md",
+		"featureDocs": ".surface/output/docs/features"
+	}
+}

@@ -1,0 +1,186 @@
+{
+	"generated": "2026-03-10T04:15:03.120Z",
+	"version": "2.0",
+	"stats": {
+		"total": 3,
+		"by_type": {
+			"unit": 1,
+			"regression": 0,
+			"functional": 2,
+			"e2e": 0,
+			"contract": 0,
+			"performance": 0,
+			"security": 0,
+			"smoke": 0
+		},
+		"by_area": {
+			"auth": 1,
+			"cart": 1,
+			"catalog": 1
+		},
+		"by_tag": {
+			"auth": 1,
+			"user-facing": 2,
+			"security": 1,
+			"cart": 1,
+			"catalog": 1,
+			"backend": 1
+		},
+		"coverage": {
+			"with_metadata": 3,
+			"without_metadata": 0
+		}
+	},
+	"requirements": [
+		{
+			"id": "REQ-001",
+			"type": "functional",
+			"area": "auth",
+			"summary": "User login requires valid credentials",
+			"rationale": "Core authentication flow. Users must provide valid email and password\nto receive a session token.\n",
+			"tags": [
+				"auth",
+				"user-facing",
+				"security"
+			],
+			"acceptance": [
+				"Valid email/password returns session token",
+				"Invalid credentials return 401",
+				"Account lockout after 5 failed attempts"
+			],
+			"location": {
+				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/vitest-project/tests/auth.test.ts",
+				"line": 3,
+				"describe": "auth",
+				"it": "requires valid credentials (REQ-001)"
+			},
+			"changed": [
+				{
+					"date": "2026-01-15",
+					"commit": "abc1234",
+					"note": "Initial stub created"
+				}
+			],
+			"authors": [],
+			"created": "2026-01-15",
+			"last_modified": "2026-01-15",
+			"status": "pending",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "stub",
+				"detected_from": "yaml-status",
+				"reason": "Explicit status: pending in YAML metadata"
+			},
+			"lifecycle": {
+				"stage": "stub",
+				"acceptance_total": 3,
+				"acceptance_covered": 0,
+				"detected_from": "impl-stub"
+			}
+		},
+		{
+			"id": "REQ-003",
+			"type": "functional",
+			"area": "cart",
+			"summary": "Add item to shopping cart",
+			"tags": [
+				"cart",
+				"user-facing"
+			],
+			"acceptance": [
+				"Item added with correct quantity",
+				"Cart total updates",
+				"Duplicate items increment quantity"
+			],
+			"location": {
+				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/vitest-project/tests/cart.test.ts",
+				"line": 3,
+				"describe": "cart",
+				"it": "adds item with correct quantity (REQ-003)"
+			},
+			"changed": [
+				{
+					"date": "2026-01-15",
+					"commit": "abc1234",
+					"note": "Initial stub"
+				},
+				{
+					"date": "2026-01-22",
+					"commit": "ghi9012",
+					"note": "Fully implemented"
+				}
+			],
+			"authors": [],
+			"created": "2026-01-15",
+			"last_modified": "2026-01-22",
+			"status": "active",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "complete",
+				"detected_from": "has-assertions"
+			},
+			"lifecycle": {
+				"stage": "tested",
+				"acceptance_total": 3,
+				"acceptance_covered": 3,
+				"detected_from": "full-acceptance"
+			}
+		},
+		{
+			"id": "REQ-002",
+			"type": "unit",
+			"area": "catalog",
+			"summary": "Product listing returns paginated results",
+			"tags": [
+				"catalog",
+				"backend"
+			],
+			"acceptance": [
+				"Returns array of products",
+				"Supports page and limit parameters",
+				"Returns total count in response"
+			],
+			"location": {
+				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/vitest-project/tests/catalog.test.ts",
+				"line": 3,
+				"describe": "catalog",
+				"it": "returns paginated product list (REQ-002)"
+			},
+			"changed": [
+				{
+					"date": "2026-01-15",
+					"commit": "abc1234",
+					"note": "Initial stub"
+				},
+				{
+					"date": "2026-01-20",
+					"commit": "def5678",
+					"note": "Implemented pagination"
+				}
+			],
+			"authors": [],
+			"created": "2026-01-15",
+			"last_modified": "2026-01-20",
+			"status": "active",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "complete",
+				"detected_from": "has-assertions"
+			},
+			"lifecycle": {
+				"stage": "tested",
+				"acceptance_total": 3,
+				"acceptance_covered": 3,
+				"detected_from": "full-acceptance"
+			}
+		}
+	],
+	"regressions": [],
+	"flows": [],
+	"contracts": [],
+	"placeholders": [],
+	"gaps": []
+}

@@ -1,6 +1,16 @@
 node_modules/
 dist/
-.surface/
 *.tgz
 .DS_Store
 .vscode/
+
+# Surface Protocol generated outputs
+# Root-level state and outputs
+/.surface/
+/SURFACE.md
+/surface.json
+/docs/features/
+
+# Fixture generated outputs (surface.json is committed for check/query tests)
+tests/fixtures/*/.surface/output/SURFACE.md
+tests/fixtures/*/.surface/output/docs/

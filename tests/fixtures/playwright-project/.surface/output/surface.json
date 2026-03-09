@@ -1,0 +1,127 @@
+{
+	"generated": "2026-03-09T19:05:49.664Z",
+	"version": "2.0",
+	"stats": {
+		"total": 2,
+		"by_type": {
+			"unit": 0,
+			"regression": 0,
+			"functional": 0,
+			"e2e": 2,
+			"contract": 0,
+			"performance": 0,
+			"security": 0,
+			"smoke": 0
+		},
+		"by_area": {
+			"navigation": 1,
+			"checkout": 1
+		},
+		"by_tag": {
+			"navigation": 1,
+			"user-facing": 2,
+			"checkout": 1,
+			"critical": 1
+		},
+		"coverage": {
+			"with_metadata": 2,
+			"without_metadata": 0
+		}
+	},
+	"requirements": [
+		{
+			"id": "REQ-E2E-001",
+			"type": "e2e",
+			"area": "navigation",
+			"summary": "Main navigation menu links work correctly",
+			"tags": ["navigation", "user-facing"],
+			"acceptance": [
+				"Home link navigates to /",
+				"Catalog link navigates to /catalog",
+				"Cart link shows item count badge"
+			],
+			"location": {
+				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/playwright-project/tests/navigation.e2e.fixture.ts",
+				"line": 3,
+				"describe": "navigation"
+			},
+			"changed": [
+				{
+					"date": "2026-01-15",
+					"commit": "abc1234",
+					"note": "Initial stub"
+				},
+				{
+					"date": "2026-01-28",
+					"commit": "mno7890",
+					"note": "Fully implemented"
+				}
+			],
+			"authors": [],
+			"created": "2026-01-15",
+			"last_modified": "2026-01-28",
+			"status": "active",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "complete",
+				"detected_from": "has-assertions"
+			},
+			"lifecycle": {
+				"stage": "tested",
+				"acceptance_total": 3,
+				"acceptance_covered": 3,
+				"detected_from": "full-acceptance"
+			}
+		}
+	],
+	"regressions": [],
+	"flows": [
+		{
+			"id": "FLOW-001",
+			"type": "e2e",
+			"area": "checkout",
+			"summary": "Complete checkout flow from cart to confirmation",
+			"tags": ["checkout", "user-facing", "critical"],
+			"acceptance": [
+				"User can proceed from cart to checkout",
+				"Shipping address form validates required fields",
+				"Payment form accepts valid card",
+				"Order confirmation shows order number",
+				"Confirmation email is sent"
+			],
+			"location": {
+				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/playwright-project/tests/checkout.e2e.fixture.ts",
+				"line": 3,
+				"describe": "checkout flow"
+			},
+			"changed": [
+				{
+					"date": "2026-01-15",
+					"commit": "abc1234",
+					"note": "Initial stub created"
+				}
+			],
+			"authors": [],
+			"created": "2026-01-15",
+			"last_modified": "2026-01-15",
+			"status": "pending",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "stub",
+				"detected_from": "yaml-status",
+				"reason": "Explicit status: pending in YAML metadata"
+			},
+			"lifecycle": {
+				"stage": "stub",
+				"acceptance_total": 5,
+				"acceptance_covered": 0,
+				"detected_from": "impl-stub"
+			}
+		}
+	],
+	"contracts": [],
+	"placeholders": [],
+	"gaps": []
+}

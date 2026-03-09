@@ -1,0 +1,183 @@
+{
+	"generated": "2026-03-10T04:15:03.270Z",
+	"version": "2.0",
+	"stats": {
+		"total": 3,
+		"by_type": {
+			"unit": 2,
+			"regression": 0,
+			"functional": 1,
+			"e2e": 0,
+			"contract": 0,
+			"performance": 0,
+			"security": 0,
+			"smoke": 0
+		},
+		"by_area": {
+			"catalog": 1,
+			"auth": 2
+		},
+		"by_tag": {
+			"catalog": 1,
+			"backend": 2,
+			"auth": 2,
+			"user-facing": 1,
+			"security": 1
+		},
+		"coverage": {
+			"with_metadata": 3,
+			"without_metadata": 0
+		}
+	},
+	"requirements": [
+		{
+			"id": "REQ-002",
+			"type": "unit",
+			"area": "catalog",
+			"summary": "Product has required attributes",
+			"tags": [
+				"catalog",
+				"backend"
+			],
+			"acceptance": [
+				"Name is required",
+				"Price must be positive",
+				"SKU must be unique"
+			],
+			"location": {
+				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/rspec-project/spec/models/product_spec.rb",
+				"line": 1,
+				"describe": "Product",
+				"it": "requires a name (REQ-002)"
+			},
+			"changed": [
+				{
+					"date": "2026-01-15",
+					"commit": "abc1234",
+					"note": "Initial stub"
+				},
+				{
+					"date": "2026-01-20",
+					"commit": "def5678",
+					"note": "Implemented validations"
+				}
+			],
+			"authors": [],
+			"created": "2026-01-15",
+			"last_modified": "2026-01-20",
+			"status": "active",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "complete",
+				"detected_from": "has-assertions"
+			},
+			"lifecycle": {
+				"stage": "coded",
+				"acceptance_total": 3,
+				"acceptance_covered": 0,
+				"detected_from": "partial-acceptance"
+			}
+		},
+		{
+			"id": "REQ-001",
+			"type": "unit",
+			"area": "auth",
+			"summary": "User model validates email format",
+			"tags": [
+				"auth",
+				"backend"
+			],
+			"acceptance": [
+				"Rejects blank email",
+				"Rejects malformed email",
+				"Accepts valid email"
+			],
+			"location": {
+				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/rspec-project/spec/models/user_spec.rb",
+				"line": 1,
+				"describe": "User validation",
+				"it": "validates email format (REQ-001)"
+			},
+			"changed": [
+				{
+					"date": "2026-01-15",
+					"commit": "abc1234",
+					"note": "Initial stub created"
+				}
+			],
+			"authors": [],
+			"created": "2026-01-15",
+			"last_modified": "2026-01-15",
+			"status": "pending",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "stub",
+				"detected_from": "yaml-status",
+				"reason": "Explicit status: pending in YAML metadata"
+			},
+			"lifecycle": {
+				"stage": "stub",
+				"acceptance_total": 3,
+				"acceptance_covered": 0,
+				"detected_from": "impl-stub"
+			}
+		},
+		{
+			"id": "REQ-003",
+			"type": "functional",
+			"area": "auth",
+			"summary": "Login endpoint authenticates users",
+			"tags": [
+				"auth",
+				"user-facing",
+				"security"
+			],
+			"acceptance": [
+				"POST /login with valid credentials returns 200 + token",
+				"POST /login with invalid credentials returns 401",
+				"Rate limits after 5 failed attempts"
+			],
+			"location": {
+				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/rspec-project/spec/requests/auth_spec.rb",
+				"line": 1,
+				"describe": "Login endpoint",
+				"it": "returns 200 with valid credentials (REQ-003)"
+			},
+			"changed": [
+				{
+					"date": "2026-01-15",
+					"commit": "abc1234",
+					"note": "Initial stub"
+				},
+				{
+					"date": "2026-01-25",
+					"commit": "jkl3456",
+					"note": "Fully implemented"
+				}
+			],
+			"authors": [],
+			"created": "2026-01-15",
+			"last_modified": "2026-01-25",
+			"status": "active",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "complete",
+				"detected_from": "has-assertions"
+			},
+			"lifecycle": {
+				"stage": "coded",
+				"acceptance_total": 3,
+				"acceptance_covered": 0,
+				"detected_from": "partial-acceptance"
+			}
+		}
+	],
+	"regressions": [],
+	"flows": [],
+	"contracts": [],
+	"placeholders": [],
+	"gaps": []
+}
