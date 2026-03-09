@@ -1,0 +1,32 @@
+{
+	"version": "0.1",
+	"targetRepo": {
+		"name": "typescript-example",
+		"adapter": "typescript-vitest"
+	},
+	"outputs": {
+		"surfaceJson": "surface.json",
+		"surfaceMarkdown": "SURFACE.md"
+	},
+	"idStrategy": {
+		"prefix": "REQ",
+		"counterFile": ".surface/state/id-counter"
+	},
+	"dangerousTags": ["critical", "security", "compliance", "blocking"],
+	"commitConventions": {
+		"specPrefix": "spec",
+		"implPrefix": "feat",
+		"requireAffects": true,
+		"trailers": ["capture", "implement", "ship", "quickfix", "problem", "learn", "reconcile"]
+	},
+	"optionalChecks": {
+		"enableHooks": false,
+		"requireSurfaceFreshness": true
+	},
+	"selectors": {
+		"componentAttribute": "data-test-id",
+		"instanceAttribute": "data-test-instance",
+		"actionSeparator": "."
+	},
+	"sources": {}
+}

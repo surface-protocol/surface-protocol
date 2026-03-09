@@ -1,0 +1,80 @@
+{
+	"generated": "2026-03-09T18:00:32.192Z",
+	"version": "2.0",
+	"stats": {
+		"total": 1,
+		"by_type": {
+			"unit": 1,
+			"regression": 0,
+			"functional": 0,
+			"e2e": 0,
+			"contract": 0,
+			"performance": 0,
+			"security": 0,
+			"smoke": 0
+		},
+		"by_area": {
+			"checkout": 1
+		},
+		"by_tag": {
+			"surface-protocol": 1,
+			"target-repo": 1
+		},
+		"coverage": {
+			"with_metadata": 1,
+			"without_metadata": 0
+		}
+	},
+	"requirements": [
+		{
+			"id": "REQ-001",
+			"type": "unit",
+			"area": "checkout",
+			"summary": "Checkout form validates line item presence",
+			"tags": ["surface-protocol", "target-repo"],
+			"acceptance": [
+				"RSpec requirement stub uses Ruby metadata carrier",
+				"Example skips until implementation exists"
+			],
+			"source": {
+				"type": "manual",
+				"ref": "manual/req-001-checkout-form-validates-line-item-presence.md"
+			},
+			"location": {
+				"file": "examples/rails-rspec/spec/requirements/checkout-form-validates-line-item-presence_spec.rb",
+				"line": 1,
+				"describe": "REQ-001: Checkout form validates line item presence",
+				"it": "RSpec requirement stub uses Ruby metadata carrier"
+			},
+			"changed": [
+				{
+					"date": "2026-03-09",
+					"commit": "pending",
+					"note": "Captured via surface capture"
+				}
+			],
+			"authors": [],
+			"created": "2026-03-09",
+			"last_modified": "2026-03-09",
+			"status": "pending",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "stub",
+				"detected_from": "yaml-status",
+				"reason": "Explicit status: pending in metadata"
+			},
+			"lifecycle": {
+				"stage": "stub",
+				"acceptance_total": 2,
+				"acceptance_covered": 0,
+				"detected_from": "impl-stub"
+			}
+		}
+	],
+	"regressions": [],
+	"flows": [],
+	"contracts": [],
+	"placeholders": [],
+	"gaps": []
+}
