@@ -10,6 +10,7 @@ import type { Command } from "commander";
 import { loadConfig } from "../lib/config.js";
 import { formatCoverageReport, formatJson } from "../lib/formatters.js";
 import { parseDirectory } from "../lib/parser.js";
+import { reconcileSources } from "../lib/reconcile.js";
 import type { CoverageReport, LifecycleStage, SurfaceMap, TestType } from "../lib/types.js";
 import { isDangerous, isOverrideExpired } from "../lib/validators.js";
 
@@ -140,6 +141,7 @@ export function registerCheckCommand(program: Command): void {
 		.option("--placeholders", "List pending/skip tests")
 		.option("--overrides", "Check for expired overrides")
 		.option("--lifecycle", "Show lifecycle stage breakdown")
+		.option("--reconcile", "Check for missing/stale source documents")
 		.option("--json", "JSON output")
 		.action(async (options) => {
 			const cwd = process.cwd();
@@ -161,7 +163,8 @@ export function registerCheckCommand(program: Command): void {
 				!options.gaps &&
 				!options.placeholders &&
 				!options.overrides &&
-				!options.lifecycle;
+				!options.lifecycle &&
+				!options.reconcile;
 			const results: Record<string, unknown> = {};
 
 			if (options.coverage || showAll) {
@@ -247,6 +250,29 @@ export function registerCheckCommand(program: Command): void {
 						console.log(chalk.bold(`Stubs needing implementation (${stubs.length}):`));
 						for (const s of stubs.slice(0, 10)) console.log(chalk.dim(`  ${s.id}: ${s.summary}`));
 						if (stubs.length > 10) console.log(chalk.dim(`  ... and ${stubs.length - 10} more`));
+					}
+					console.log("");
+				}
+			}
+
+			if ((options.reconcile || showAll) && surfaceMap) {
+				const reconcile = await reconcileSources(cwd, surfaceMap);
+				results.reconcile = reconcile;
+				if (!jsonOutput) {
+					if (reconcile.missing_sources.length > 0) {
+						console.log(chalk.bold(`Missing Sources (${reconcile.missing_sources.length}):`));
+						for (const ref of reconcile.missing_sources) {
+							console.log(chalk.yellow(`  ${ref}`));
+						}
+					}
+					if (reconcile.stale_sources.length > 0) {
+						console.log(chalk.bold(`Stale Sources (${reconcile.stale_sources.length}):`));
+						for (const ref of reconcile.stale_sources) {
+							console.log(chalk.dim(`  ${ref}`));
+						}
+					}
+					if (reconcile.missing_sources.length === 0 && reconcile.stale_sources.length === 0) {
+						console.log(chalk.green("Sources are in sync."));
 					}
 					console.log("");
 				}
