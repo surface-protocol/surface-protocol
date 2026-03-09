@@ -1,0 +1,57 @@
+{
+	"name": "@surface-protocol/cli",
+	"version": "0.1.0",
+	"description": "Test-driven requirement tracking. Tests are the spec. surface.json is the queryable truth.",
+	"type": "module",
+	"main": "dist/lib/index.js",
+	"types": "dist/lib/index.d.ts",
+	"bin": {
+		"surface": "dist/cli/index.js"
+	},
+	"files": [
+		"dist/",
+		"plugin/"
+	],
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"typecheck": "tsc --noEmit",
+		"check": "biome check .",
+		"format": "biome check --write .",
+		"prepublishOnly": "bun run build && bun run test"
+	},
+	"dependencies": {
+		"chalk": "^5.6.2",
+		"commander": "^14.0.3",
+		"yaml": "^2.8.2",
+		"zod": "3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.6",
+		"@types/node": "^25.4.0",
+		"typescript": "^5.8.0",
+		"vitest": "^4.0.18"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/surface-protocol/surface-protocol.git"
+	},
+	"homepage": "https://github.com/surface-protocol/surface-protocol",
+	"keywords": [
+		"testing",
+		"requirements",
+		"claude-code",
+		"tdd",
+		"surface-protocol",
+		"specification",
+		"requirement-tracking"
+	],
+	"author": {
+		"name": "Surface Protocol Contributors"
+	}
+}
