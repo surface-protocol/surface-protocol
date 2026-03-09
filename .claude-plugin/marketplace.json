@@ -1,0 +1,26 @@
+{
+	"name": "surface-protocol",
+	"owner": {
+		"name": "Surface Protocol Contributors",
+		"url": "https://github.com/surface-protocol"
+	},
+	"metadata": {
+		"description": "Test-driven requirement tracking for Claude Code",
+		"version": "0.1.0"
+	},
+	"plugins": [
+		{
+			"name": "surface",
+			"source": "./plugin",
+			"description": "Test-driven requirement tracking. Tests are the spec. surface.json is the queryable truth.",
+			"version": "0.1.0",
+			"author": {
+				"name": "Surface Protocol Contributors"
+			},
+			"homepage": "https://github.com/surface-protocol/surface-protocol",
+			"repository": "https://github.com/surface-protocol/surface-protocol",
+			"license": "MIT",
+			"keywords": ["testing", "requirements", "tdd", "specification", "surface-protocol"]
+		}
+	]
+}

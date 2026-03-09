@@ -1,0 +1,27 @@
+{
+	"hooks": {
+		"SessionStart": [
+			{
+				"matcher": "startup",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/surface-welcome.sh\""
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/surface-protect.sh\"",
+						"statusMessage": "Checking Surface Protocol file protection..."
+					}
+				]
+			}
+		]
+	}
+}
