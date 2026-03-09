@@ -123,3 +123,5 @@ export {
 	validateSurfaceMap,
 	validateTestMetadata,
 } from "./validators.js";
+// Write utilities
+export { stripTimestamps, writeIfContentChanged } from "./write-if-changed.js";
