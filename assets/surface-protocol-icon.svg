@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Main gradient: deep violet to electric cyan -->
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6C3CE1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06D6A0;stop-opacity:1" />
+    </linearGradient>
+    <!-- Glow gradient for the top surface -->
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#34D399;stop-opacity:0.3" />
+    </linearGradient>
+    <!-- Accent gradient for nodes -->
+    <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.95" />
+      <stop offset="60%" style="stop-color:#A5F3FC;stop-opacity:0.7" />
+      <stop offset="100%" style="stop-color:#06D6A0;stop-opacity:0" />
+    </radialGradient>
+    <!-- Background circle gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" style="stop-color:#1E1B4B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0F0A2A;stop-opacity:1" />
+    </radialGradient>
+    <!-- Subtle ring glow -->
+    <radialGradient id="ringGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="70%" style="stop-color:#6C3CE1;stop-opacity:0" />
+      <stop offset="90%" style="stop-color:#6C3CE1;stop-opacity:0.08" />
+      <stop offset="100%" style="stop-color:#6C3CE1;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="248" fill="url(#bgGrad)" />
+  <!-- Subtle outer ring -->
+  <circle cx="256" cy="256" r="248" fill="none" stroke="url(#grad1)" stroke-width="2.5" opacity="0.4" />
+
+  <!-- === LAYERED SURFACE MESH === -->
+  <!-- The concept: three stacked translucent surface planes with connected nodes,
+       suggesting protocol layers and the "surface" metaphor -->
+
+  <!-- Bottom layer (deepest, most transparent) -->
+  <g opacity="0.25">
+    <path d="M128,340 L256,380 L384,340 L320,290 L192,290 Z" 
+          fill="url(#grad1)" />
+    <line x1="128" y1="340" x2="192" y2="290" stroke="#6C3CE1" stroke-width="1.5" opacity="0.5"/>
+    <line x1="384" y1="340" x2="320" y2="290" stroke="#06D6A0" stroke-width="1.5" opacity="0.5"/>
+    <line x1="256" y1="380" x2="256" y2="310" stroke="#3B82F6" stroke-width="1.5" opacity="0.5"/>
+  </g>
+
+  <!-- Middle layer -->
+  <g opacity="0.45">
+    <path d="M112,280 L256,326 L400,280 L330,222 L182,222 Z" 
+          fill="url(#grad1)" />
+    <!-- Grid lines on middle surface -->
+    <line x1="184" y1="252" x2="328" y2="252" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <line x1="256" y1="222" x2="256" y2="326" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+    <!-- Edge highlights -->
+    <line x1="112" y1="280" x2="256" y2="326" stroke="#A78BFA" stroke-width="1.2" opacity="0.4"/>
+    <line x1="256" y1="326" x2="400" y2="280" stroke="#34D399" stroke-width="1.2" opacity="0.4"/>
+  </g>
+
+  <!-- Top layer (primary surface) -->
+  <g>
+    <path d="M96,218 L256,270 L416,218 L340,152 L172,152 Z" 
+          fill="url(#grad2)" stroke="url(#grad1)" stroke-width="2"/>
+    <!-- Internal mesh lines -->
+    <line x1="172" y1="185" x2="340" y2="185" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <line x1="134" y1="218" x2="378" y2="218" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+    <line x1="214" y1="152" x2="176" y2="244" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <line x1="298" y1="152" x2="336" y2="244" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <line x1="256" y1="152" x2="256" y2="270" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  </g>
+
+  <!-- === PROTOCOL NODES (connection points across layers) === -->
+  
+  <!-- Vertical connection lines between layers -->
+  <line x1="172" y1="152" x2="182" y2="222" stroke="url(#grad1)" stroke-width="1.5" opacity="0.35" stroke-dasharray="4,4"/>
+  <line x1="340" y1="152" x2="330" y2="222" stroke="url(#grad1)" stroke-width="1.5" opacity="0.35" stroke-dasharray="4,4"/>
+  <line x1="256" y1="270" x2="256" y2="380" stroke="url(#grad1)" stroke-width="1.5" opacity="0.3" stroke-dasharray="4,4"/>
+  <line x1="96" y1="218" x2="112" y2="280" stroke="url(#grad1)" stroke-width="1.5" opacity="0.3" stroke-dasharray="4,4"/>
+  <line x1="416" y1="218" x2="400" y2="280" stroke="url(#grad1)" stroke-width="1.5" opacity="0.3" stroke-dasharray="4,4"/>
+
+  <!-- Top surface corner nodes -->
+  <circle cx="96" cy="218" r="6" fill="url(#nodeGlow)" />
+  <circle cx="96" cy="218" r="3" fill="#FFFFFF" />
+  
+  <circle cx="416" cy="218" r="6" fill="url(#nodeGlow)" />
+  <circle cx="416" cy="218" r="3" fill="#FFFFFF" />
+  
+  <circle cx="172" cy="152" r="7" fill="url(#nodeGlow)" />
+  <circle cx="172" cy="152" r="3.5" fill="#FFFFFF" />
+  
+  <circle cx="340" cy="152" r="7" fill="url(#nodeGlow)" />
+  <circle cx="340" cy="152" r="3.5" fill="#FFFFFF" />
+  
+  <circle cx="256" cy="270" r="7" fill="url(#nodeGlow)" />
+  <circle cx="256" cy="270" r="3.5" fill="#FFFFFF" />
+
+  <!-- Center apex node (hero node) -->
+  <circle cx="256" cy="152" r="10" fill="url(#nodeGlow)" opacity="0.8"/>
+  <circle cx="256" cy="152" r="5" fill="#FFFFFF" />
+
+  <!-- Middle layer nodes (subtler) -->
+  <circle cx="112" cy="280" r="4.5" fill="#A78BFA" opacity="0.6" />
+  <circle cx="112" cy="280" r="2" fill="#FFFFFF" opacity="0.8" />
+  
+  <circle cx="400" cy="280" r="4.5" fill="#34D399" opacity="0.6" />
+  <circle cx="400" cy="280" r="2" fill="#FFFFFF" opacity="0.8" />
+
+  <!-- Bottom layer node -->
+  <circle cx="256" cy="380" r="4" fill="#3B82F6" opacity="0.5" />
+  <circle cx="256" cy="380" r="2" fill="#FFFFFF" opacity="0.7" />
+
+  <!-- === Subtle ambient particles === -->
+  <circle cx="150" cy="120" r="1.5" fill="#A78BFA" opacity="0.4"/>
+  <circle cx="370" cy="130" r="1" fill="#34D399" opacity="0.35"/>
+  <circle cx="420" cy="320" r="1.5" fill="#06D6A0" opacity="0.3"/>
+  <circle cx="85" cy="310" r="1" fill="#6C3CE1" opacity="0.35"/>
+  <circle cx="310" cy="400" r="1" fill="#3B82F6" opacity="0.3"/>
+  <circle cx="190" cy="395" r="1.2" fill="#A78BFA" opacity="0.25"/>
+</svg>
