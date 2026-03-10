@@ -51,6 +51,7 @@ export const SourceTypeSchema = z.enum([
 	"implementation",
 	"implementation-discovery",
 	"user-request",
+	"figma",
 ]);
 
 export const ImplementationStateSchema = z.enum(["stub", "complete", "skipped", "not-implemented"]);

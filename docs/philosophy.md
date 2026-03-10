@@ -52,6 +52,10 @@ Capture requirements as test stubs before writing implementation. This forces yo
 
 The moment requirements leave the codebase, they start drifting. Surface Protocol keeps them embedded in the only place that matters: the tests.
 
+## Known Gaps
+
+The protocol currently captures behavioral surface — what the product does — but not visual surface — what users see and touch. Design specs, style guides, and component patterns live outside the surface map. This is a significant gap for product continuity. See [The Visual Surface Gap](research/visual-surface-gap.md) for analysis and open research questions.
+
 ## What This Is Not
 
 - **Not a replacement for Jira/Linear.** Those tools handle project management. Surface Protocol handles requirement truth.
