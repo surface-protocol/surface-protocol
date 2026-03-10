@@ -75,6 +75,7 @@
 	"regressions": [],
 	"flows": [],
 	"contracts": [],
+	"smoke": [],
 	"placeholders": [],
 	"gaps": []
 }

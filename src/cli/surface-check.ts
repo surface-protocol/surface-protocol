@@ -72,6 +72,7 @@ async function checkFreshness(surfaceMap: SurfaceMap): Promise<FreshnessIssue[]>
 		...surfaceMap.regressions,
 		...surfaceMap.flows,
 		...surfaceMap.contracts,
+		...surfaceMap.smoke,
 	];
 
 	for (const req of allReqs) {
@@ -115,6 +116,7 @@ function checkOverrides(surfaceMap: SurfaceMap) {
 		...surfaceMap.regressions,
 		...surfaceMap.flows,
 		...surfaceMap.contracts,
+		...surfaceMap.smoke,
 	];
 	for (const req of allReqs) {
 		if (req.override) {

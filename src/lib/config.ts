@@ -27,6 +27,9 @@ export const SurfaceConfigSchema = z.object({
 			contract: z.string().default("CONTRACT"),
 			smoke: z.string().default("SMOKE"),
 			regression: z.string().default("REGR"),
+			functional: z.string().default("FUNC"),
+			performance: z.string().default("NFR"),
+			security: z.string().default("SEC"),
 		})
 		.default({}),
 

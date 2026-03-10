@@ -40,6 +40,7 @@ const EMPTY_SURFACE_MAP: SurfaceMap = {
 	regressions: [],
 	flows: [],
 	contracts: [],
+	smoke: [],
 	placeholders: [],
 	gaps: [],
 };

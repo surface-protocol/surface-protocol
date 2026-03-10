@@ -164,6 +164,7 @@ export function formatMarkdown(surfaceMap: SurfaceMap): string {
 		...surfaceMap.regressions,
 		...surfaceMap.flows,
 		...surfaceMap.contracts,
+		...surfaceMap.smoke,
 	];
 	const lifecycleCounts: Record<LifecycleStage, number> = {
 		stub: 0,
@@ -222,6 +223,16 @@ export function formatMarkdown(surfaceMap: SurfaceMap): string {
 		lines.push("## Contracts");
 		lines.push("");
 		for (const req of surfaceMap.contracts) {
+			lines.push(formatRequirementMarkdown(req));
+			lines.push("");
+		}
+	}
+
+	// Smoke Tests
+	if (surfaceMap.smoke.length > 0) {
+		lines.push("## Smoke Tests");
+		lines.push("");
+		for (const req of surfaceMap.smoke) {
 			lines.push(formatRequirementMarkdown(req));
 			lines.push("");
 		}
@@ -507,6 +518,7 @@ export function groupRequirementsByArea(surfaceMap: SurfaceMap): Map<string, Req
 		...surfaceMap.regressions,
 		...surfaceMap.flows,
 		...surfaceMap.contracts,
+		...surfaceMap.smoke,
 	];
 
 	const grouped = new Map<string, Requirement[]>();

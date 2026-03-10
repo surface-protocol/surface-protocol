@@ -135,6 +135,10 @@ export const TestMetadataSchema = z
 		flow: z.string().optional(),
 		contract: z.string().optional(),
 		smoke: z.string().optional(),
+		func: z.string().optional(),
+		perf: z.string().optional(),
+		sec: z.string().optional(),
+		regr: z.string().optional(),
 
 		// Core fields
 		type: TestTypeSchema,
@@ -218,9 +222,23 @@ export const TestMetadataSchema = z
 		// Audience impact
 		audience: AudienceTagSchema.optional(),
 	})
-	.refine((data) => Boolean(data.req || data.flow || data.contract || data.smoke), {
-		message: "At least one identifier is required: req, flow, contract, or smoke",
-	});
+	.refine(
+		(data) =>
+			Boolean(
+				data.req ||
+					data.flow ||
+					data.contract ||
+					data.smoke ||
+					data.func ||
+					data.perf ||
+					data.sec ||
+					data.regr,
+			),
+		{
+			message:
+				"At least one identifier is required: req, flow, contract, smoke, func, perf, sec, or regr",
+		},
+	);
 
 // =============================================================================
 // Surface Map Schemas
@@ -297,6 +315,7 @@ export const SurfaceMapSchema = z.object({
 	regressions: z.array(RequirementSchema),
 	flows: z.array(RequirementSchema),
 	contracts: z.array(RequirementSchema),
+	smoke: z.array(RequirementSchema),
 	placeholders: z.array(PlaceholderSchema),
 	gaps: z.array(CoverageGapSchema),
 });

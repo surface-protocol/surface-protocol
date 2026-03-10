@@ -127,9 +127,10 @@ function calculateStats(
 	regressions: Requirement[],
 	flows: Requirement[],
 	contracts: Requirement[],
+	smoke: Requirement[],
 	gapsCount: number,
 ): SurfaceMapStats {
-	const all = [...requirements, ...regressions, ...flows, ...contracts];
+	const all = [...requirements, ...regressions, ...flows, ...contracts, ...smoke];
 	const byType: Record<TestType, number> = {
 		unit: 0,
 		regression: 0,
@@ -167,6 +168,7 @@ async function generateSurfaceMap(dir: string, testFilePatterns?: string[]): Pro
 		regressions: [] as Requirement[],
 		flows: [] as Requirement[],
 		contracts: [] as Requirement[],
+		smoke: [] as Requirement[],
 	};
 
 	for (const req of requirements) {
@@ -180,6 +182,7 @@ async function generateSurfaceMap(dir: string, testFilePatterns?: string[]): Pro
 		...categorized.regressions,
 		...categorized.flows,
 		...categorized.contracts,
+		...categorized.smoke,
 	];
 	promoteToDeployed(allReqs, smokeMap);
 
@@ -189,6 +192,7 @@ async function generateSurfaceMap(dir: string, testFilePatterns?: string[]): Pro
 		categorized.regressions,
 		categorized.flows,
 		categorized.contracts,
+		categorized.smoke,
 		gaps.length,
 	);
 
@@ -307,6 +311,7 @@ export function registerGenCommand(program: Command): void {
 						...surfaceMap.regressions,
 						...surfaceMap.flows,
 						...surfaceMap.contracts,
+						...surfaceMap.smoke,
 					].filter((r) => r.tags.some((t) => dangerousTags.has(t)));
 
 					if (dangerous.length > 0) {
@@ -326,6 +331,7 @@ export function registerGenCommand(program: Command): void {
 						...surfaceMap.regressions,
 						...surfaceMap.flows,
 						...surfaceMap.contracts,
+						...surfaceMap.smoke,
 					];
 					const lc: Record<LifecycleStage, number> = { stub: 0, coded: 0, tested: 0, deployed: 0 };
 					for (const r of allReqs) {

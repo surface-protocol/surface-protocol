@@ -1,5 +1,5 @@
 {
-	"generated": "2026-03-10T04:15:03.270Z",
+	"generated": "2026-03-10T05:30:05.177Z",
 	"version": "2.0",
 	"stats": {
 		"total": 3,
@@ -178,6 +178,7 @@
 	"regressions": [],
 	"flows": [],
 	"contracts": [],
+	"smoke": [],
 	"placeholders": [],
 	"gaps": []
 }

@@ -267,15 +267,26 @@ export async function parseDirectory(
 // =============================================================================
 
 export function extractRequirementId(metadata: TestMetadata): string | null {
-	return metadata.req || metadata.flow || metadata.contract || metadata.smoke || null;
+	return (
+		metadata.req ||
+		metadata.flow ||
+		metadata.contract ||
+		metadata.smoke ||
+		metadata.func ||
+		metadata.perf ||
+		metadata.sec ||
+		metadata.regr ||
+		null
+	);
 }
 
 export function getRequirementCategory(
 	id: string,
-): "requirements" | "regressions" | "flows" | "contracts" {
+): "requirements" | "regressions" | "flows" | "contracts" | "smoke" {
 	if (id.startsWith("REGR-")) return "regressions";
 	if (id.startsWith("FLOW-")) return "flows";
 	if (id.startsWith("CONTRACT-")) return "contracts";
+	if (id.startsWith("SMOKE-")) return "smoke";
 	return "requirements";
 }
 
@@ -284,7 +295,16 @@ export function getRequirementCategory(
 // =============================================================================
 
 export function hasRequiredFields(metadata: TestMetadata): boolean {
-	const hasId = Boolean(metadata.req || metadata.flow || metadata.contract || metadata.smoke);
+	const hasId = Boolean(
+		metadata.req ||
+			metadata.flow ||
+			metadata.contract ||
+			metadata.smoke ||
+			metadata.func ||
+			metadata.perf ||
+			metadata.sec ||
+			metadata.regr,
+	);
 	return hasId && Boolean(metadata.type) && Boolean(metadata.summary);
 }
 

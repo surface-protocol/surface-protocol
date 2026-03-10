@@ -168,10 +168,14 @@ export interface Override {
 
 export interface TestMetadata {
 	// Identity - one of these is required
-	req?: string; // REQ-XXX for unit/functional tests
+	req?: string; // REQ-XXX for unit tests
 	flow?: string; // FLOW-XXX for e2e tests
 	contract?: string; // CONTRACT-XXX for contract tests
 	smoke?: string; // SMOKE-XXX for smoke tests
+	func?: string; // FUNC-XXX for functional tests
+	perf?: string; // NFR-XXX for performance/non-functional tests
+	sec?: string; // SEC-XXX for security tests
+	regr?: string; // REGR-XXX for regression tests
 
 	// Core fields
 	type: TestType;
@@ -370,6 +374,7 @@ export interface SurfaceMap {
 	regressions: Requirement[];
 	flows: Requirement[];
 	contracts: Requirement[];
+	smoke: Requirement[];
 	placeholders: Placeholder[];
 	gaps: CoverageGap[];
 }

@@ -17,6 +17,7 @@ function getAllRequirements(surfaceMap: SurfaceMap): Requirement[] {
 		...surfaceMap.regressions,
 		...surfaceMap.flows,
 		...surfaceMap.contracts,
+		...surfaceMap.smoke,
 	];
 }
 

@@ -58,6 +58,7 @@ export async function reconcileSources(
 			...surfaceMap.regressions,
 			...surfaceMap.flows,
 			...surfaceMap.contracts,
+			...surfaceMap.smoke,
 		]
 			.map((req) => req.source?.ref)
 			.filter(Boolean) as string[],

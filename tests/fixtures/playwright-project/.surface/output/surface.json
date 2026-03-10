@@ -122,6 +122,7 @@
 		}
 	],
 	"contracts": [],
+	"smoke": [],
 	"placeholders": [],
 	"gaps": []
 }
