@@ -143,6 +143,7 @@ export function registerCheckCommand(program: Command): void {
 		.option("--placeholders", "List pending/skip tests")
 		.option("--overrides", "Check for expired overrides")
 		.option("--lifecycle", "Show lifecycle stage breakdown")
+		.option("--conflicts", "Show declared requirement conflicts")
 		.option("--reconcile", "Check for missing/stale source documents")
 		.option("--json", "JSON output")
 		.action(async (options) => {
@@ -166,6 +167,7 @@ export function registerCheckCommand(program: Command): void {
 				!options.placeholders &&
 				!options.overrides &&
 				!options.lifecycle &&
+				!options.conflicts &&
 				!options.reconcile;
 			const results: Record<string, unknown> = {};
 
@@ -234,6 +236,7 @@ export function registerCheckCommand(program: Command): void {
 					...surfaceMap.regressions,
 					...surfaceMap.flows,
 					...surfaceMap.contracts,
+					...surfaceMap.smoke,
 				];
 				const lc: Record<LifecycleStage, number> = { stub: 0, coded: 0, tested: 0, deployed: 0 };
 				for (const req of allReqs) {
@@ -252,6 +255,35 @@ export function registerCheckCommand(program: Command): void {
 						console.log(chalk.bold(`Stubs needing implementation (${stubs.length}):`));
 						for (const s of stubs.slice(0, 10)) console.log(chalk.dim(`  ${s.id}: ${s.summary}`));
 						if (stubs.length > 10) console.log(chalk.dim(`  ... and ${stubs.length - 10} more`));
+					}
+					console.log("");
+				}
+			}
+
+			if ((options.conflicts || showAll) && surfaceMap) {
+				const allReqs = [
+					...surfaceMap.requirements,
+					...surfaceMap.regressions,
+					...surfaceMap.flows,
+					...surfaceMap.contracts,
+					...surfaceMap.smoke,
+				];
+				const conflicting = allReqs.filter((r) => r.conflicts && r.conflicts.length > 0);
+				results.conflicts = conflicting.map((r) => ({
+					id: r.id,
+					conflicts_with: r.conflicts,
+					summary: r.summary,
+				}));
+				if (!jsonOutput) {
+					if (conflicting.length > 0) {
+						console.log(chalk.bold(`Conflicts (${conflicting.length}):`));
+						for (const c of conflicting) {
+							console.log(
+								chalk.yellow(`  ${c.id} conflicts with ${c.conflicts?.join(", ")}: ${c.summary}`),
+							);
+						}
+					} else {
+						console.log(chalk.green("No declared conflicts."));
 					}
 					console.log("");
 				}
