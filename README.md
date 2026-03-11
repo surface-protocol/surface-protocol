@@ -35,7 +35,7 @@ Surface Protocol makes the product surface explicit by embedding requirements **
 
 ```
 +-----------------------------------------------------------------------------+
-|                    USER INPUT -> PRODUCT FLOW                                |
+|                    USER INPUT -> PRODUCT FLOW                               |
 +-----------------------------------------------------------------------------+
 |                                                                             |
 |  +-------------------+                                                      |
@@ -57,7 +57,7 @@ Surface Protocol makes the product surface explicit by embedding requirements **
 |            |                                                                |
 |            v                                                                |
 |  +-------------------+                                                      |
-|  |  SURFACE.JSON     |  THE QUERYABLE TRUTH - generated from test metadata      |
+|  |  SURFACE.JSON     |  THE QUERYABLE TRUTH - generated from test metadata  |
 |  |  (Queryable map)  |  Rich, queryable, CANNOT drift from reality          |
 |  +---------+---------+                                                      |
 |            |                                                                |
@@ -386,7 +386,7 @@ Run `surface gen` to regenerate them.
 |  The test CANNOT drift from reality. It either passes or fails.             |
 |  The PRD CAN drift. That's why we kill it.                                  |
 |                                                                             |
-|  surface.json = THE QUERYABLE TRUTH (queryable, complete, never lies)           |
+|  surface.json = THE QUERYABLE TRUTH (queryable, complete, never lies)       |
 |  Git commits = THE DOCUMENTATION (history, blame, changelog)                |
 |  Tests = THE REQUIREMENTS (pass = met, fail = violated)                     |
 |                                                                             |
