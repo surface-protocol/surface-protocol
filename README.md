@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/surface-protocol/surface-protocol/actions/workflows/ci.yml"><img src="https://github.com/surface-protocol/surface-protocol/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://www.npmjs.com/package/@surface-protocol/cli"><img src="https://img.shields.io/badge/npm-unpublished-lightgrey" alt="npm: unpublished" /></a>
+  <a href="https://www.npmjs.com/package/@surface-protocol/cli"><img src="https://img.shields.io/npm/v/@surface-protocol/cli" alt="npm version" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
 </p>
 
