@@ -381,6 +381,8 @@ export interface SurfaceMap {
 	smoke: Requirement[];
 	placeholders: Placeholder[];
 	gaps: CoverageGap[];
+	/** Code surface discovery data — populated by `surface discover` */
+	discovered?: DiscoveryReport | undefined;
 }
 
 // =============================================================================
@@ -556,6 +558,58 @@ export interface DriftReport {
 		ghost_count: number;
 		drift_count: number;
 		clean: boolean;
+	};
+}
+
+// =============================================================================
+// Code Surface Discovery Types (surface discover)
+// =============================================================================
+
+/**
+ * Categories of customer-facing entry points.
+ */
+export type EntryPointType = "api" | "page" | "cli" | "script" | "graphql" | "webhook";
+
+/**
+ * Coverage state of a discovered entry point.
+ * - covered: has a test with YAML surface metadata
+ * - untracked: has a test but no surface metadata
+ * - untested: no test coverage at all
+ */
+export type CoverageState = "covered" | "untracked" | "untested";
+
+/**
+ * A raw entry point discovered from implementation code.
+ */
+export interface RawEntryPoint {
+	type: EntryPointType;
+	method?: string | undefined; // HTTP method for APIs (GET, POST, etc.)
+	path: string; // route path, page path, command name, script name
+	file: string; // source file (relative to project root)
+	line: number;
+	label?: string | undefined; // human-readable label
+}
+
+/**
+ * A discovered entry point annotated with coverage information.
+ */
+export interface SurfaceEntryPoint extends RawEntryPoint {
+	coverage: CoverageState;
+	requirement_ids: string[]; // linked REQ-* IDs from surface.json
+}
+
+/**
+ * Full discovery report produced by `surface discover`.
+ */
+export interface DiscoveryReport {
+	generated: string; // ISO timestamp
+	entry_points: SurfaceEntryPoint[];
+	stats: {
+		total: number;
+		covered: number;
+		untracked: number;
+		untested: number;
+		by_type: Partial<Record<EntryPointType, number>>;
 	};
 }
 

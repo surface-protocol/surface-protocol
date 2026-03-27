@@ -161,6 +161,65 @@ surface backfill --all --dry-run --json
 
 ---
 
+## `surface discover`
+
+Scan implementation code to find all customer-facing entry points (APIs, web pages, CLI commands, package scripts, GraphQL operations) and classify their test coverage.
+
+This answers: *"What does this product actually expose to customers?"*
+
+```bash
+surface discover [options]
+```
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Machine-readable `DiscoveryReport` JSON |
+| `--type <type>` | Filter: `api`, `page`, `cli`, `script`, `graphql`, `webhook` |
+| `--uncovered` | Show only untested and untracked entry points |
+| `--exit-code` | Exit 1 if any untested entry points found |
+| `--coverage` | Show coverage percentages per type |
+| `--save` | Save discovery results to `surface.json` (`discovered` section) |
+
+**Entry point types discovered:**
+
+| Type | What it finds |
+|------|--------------|
+| `api` | HTTP routes — Hono `.get/.post`, Express `router.get`, Rails `routes.rb` |
+| `page` | Web pages — Astro `src/pages/**/*.astro`, Next.js pages |
+| `cli` | CLI commands — Commander.js `.command()`, Yargs |
+| `script` | Package scripts — `scripts` in `package.json` |
+| `graphql` | Queries, mutations, subscriptions in `.graphql` / `.gql` files |
+
+**Coverage classification:**
+- `covered` — entry point has a test with YAML surface metadata
+- `untracked` — entry point has a test but no surface metadata (run `surface backfill`)
+- `untested` — no test coverage at all (run `surface capture` to create stubs)
+
+Discovery adapters auto-detect based on your dependencies (`hono` → Hono adapter, `astro` → Astro pages, etc.)
+
+**To annotate a test as explicitly covering a discovered entry point**, add a `covers` field to its YAML metadata:
+```yaml
+covers:
+  - "POST /api/auth/login"
+  - "GET /api/auth/me"
+```
+
+```bash
+# Full report
+surface discover
+
+# APIs only, show uncovered
+surface discover --type api --uncovered
+
+# Save to surface.json
+surface discover --save
+
+# CI gate — fails if untested entry points exist
+surface discover --exit-code
+```
+
+---
+
 ## `surface query`
 
 Query requirements from `surface.json`.
