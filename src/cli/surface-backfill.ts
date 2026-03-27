@@ -14,13 +14,13 @@ import chalk from "chalk";
 import type { Command } from "commander";
 import { getAdapter } from "../lib/adapters/adapter.js";
 import "../lib/adapters/index.js";
+import { spawnSync } from "node:child_process";
+import { backfillFile, idPrefixForType, inferArea, inferTestType } from "../lib/backfill.js";
 import { loadConfig } from "../lib/config.js";
 import { buildDriftReport } from "../lib/drift.js";
-import { backfillFile, idPrefixForType, inferArea, inferTestType } from "../lib/backfill.js";
+import { formatJson } from "../lib/formatters.js";
 import { allocateRequirementIds } from "../lib/ingest.js";
 import type { SurfaceMap, UntrackedTest } from "../lib/types.js";
-import { formatJson } from "../lib/formatters.js";
-import { spawnSync } from "node:child_process";
 
 export function registerBackfillCommand(program: Command): void {
 	program
@@ -73,7 +73,9 @@ export function registerBackfillCommand(program: Command): void {
 			// Filter candidates
 			let untracked = report.untracked;
 			if (options.file) {
-				untracked = untracked.filter((t) => t.file === options.file || t.file.endsWith(options.file));
+				untracked = untracked.filter(
+					(t) => t.file === options.file || t.file.endsWith(options.file),
+				);
 				if (untracked.length === 0) {
 					console.log(chalk.yellow(`No untracked tests found in "${options.file}".`));
 					return;
@@ -85,9 +87,9 @@ export function registerBackfillCommand(program: Command): void {
 				printUntrackedList(untracked);
 				console.log("");
 				console.log("To backfill:");
-				console.log(chalk.cyan("  surface backfill --all              ") + "  annotate all");
-				console.log(chalk.cyan("  surface backfill --file <path>      ") + "  annotate one file");
-				console.log(chalk.cyan("  surface backfill --all --dry-run    ") + "  preview only");
+				console.log(`${chalk.cyan("  surface backfill --all              ")}  annotate all`);
+				console.log(`${chalk.cyan("  surface backfill --file <path>      ")}  annotate one file`);
+				console.log(`${chalk.cyan("  surface backfill --all --dry-run    ")}  preview only`);
 				return;
 			}
 
@@ -131,13 +133,7 @@ export function registerBackfillCommand(program: Command): void {
 			const allResults = [];
 			for (const [file, tests] of byFile) {
 				const ids = idsByFile.get(file) ?? [];
-				const result = await backfillFile(
-					cwd,
-					{ file, untracked: tests },
-					adapter,
-					config,
-					ids,
-				);
+				const result = await backfillFile(cwd, { file, untracked: tests }, adapter, config, ids);
 				allResults.push(result);
 			}
 
@@ -197,7 +193,7 @@ function printDryRunPreview(
 		const area = (options.area as string) ?? inferArea(t.file, config.areas);
 		const label = t.it ?? "untracked test";
 		console.log(
-			`  ${chalk.dim(t.file + ":" + t.line)}  ${chalk.cyan(type)}/${chalk.green(area)}  "${label}"`,
+			`  ${chalk.dim(`${t.file}:${t.line}`)}  ${chalk.cyan(type)}/${chalk.green(area)}  "${label}"`,
 		);
 	}
 	if (tests.length > 30) console.log(chalk.dim(`  ... and ${tests.length - 30} more`));
@@ -205,15 +201,11 @@ function printDryRunPreview(
 	console.log(chalk.dim("Remove --dry-run to write."));
 }
 
-function printBackfillResults(
-	results: import("../lib/backfill.js").BackfillResult[],
-): void {
+function printBackfillResults(results: import("../lib/backfill.js").BackfillResult[]): void {
 	const totalInjected = results.reduce((sum, r) => sum + r.injected.length, 0);
 	const totalErrors = results.reduce((sum, r) => sum + r.errors.length, 0);
 
-	console.log(
-		chalk.green(`\nBackfilled ${totalInjected} tests across ${results.length} files:`),
-	);
+	console.log(chalk.green(`\nBackfilled ${totalInjected} tests across ${results.length} files:`));
 	for (const r of results) {
 		if (r.injected.length > 0) {
 			const ids = r.injected.map((i) => i.id).join(", ");
@@ -229,9 +221,7 @@ function printBackfillResults(
 		}
 	}
 	console.log(
-		chalk.dim(
-			"\nNote: Annotations are drafts — review summaries, areas, and acceptance criteria.",
-		),
+		chalk.dim("\nNote: Annotations are drafts — review summaries, areas, and acceptance criteria."),
 	);
 }
 

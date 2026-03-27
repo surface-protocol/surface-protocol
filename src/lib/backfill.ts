@@ -6,13 +6,10 @@
  */
 
 import { readFile, writeFile } from "node:fs/promises";
-import { basename, dirname, relative } from "node:path";
-import { stringify } from "yaml";
-import type { StackAdapter } from "./adapters/adapter.js";
-import { JS_BLOCK, HASH_BLOCK } from "./comment-formats.js";
-import type { CommentFormat } from "./adapters/adapter.js";
-import { extractAllYamlBlocks } from "./parser.js";
+import { dirname } from "node:path";
+import type { CommentFormat, StackAdapter } from "./adapters/adapter.js";
 import type { SurfaceConfig } from "./config.js";
+import { extractAllYamlBlocks } from "./parser.js";
 import type { TestMetadata, TestType, UntrackedTest } from "./types.js";
 
 // =============================================================================
@@ -55,7 +52,7 @@ export function inferArea(filePath: string, configAreas: Record<string, unknown>
 	const dirs = segments.slice(0, -1);
 
 	for (const seg of dirs) {
-		const clean = seg.replace(/[-_.]/g, " ").split(" ")[0] ?? seg;
+		const _clean = seg.replace(/[-_.]/g, " ").split(" ")[0] ?? seg;
 		if (!GENERIC_SEGMENTS.has(seg.toLowerCase()) && !seg.startsWith(".")) {
 			return seg;
 		}
@@ -77,10 +74,14 @@ export function inferTestType(filePath: string, adapter: StackAdapter): TestType
 
 	if (p.includes("/e2e/") || p.includes(".e2e.") || p.includes("playwright")) return "e2e";
 	if (p.includes("/smoke/") || p.includes(".smoke.")) return "smoke";
-	if (p.includes("/contract/") || p.includes("/pact/") || p.includes(".contract.")) return "contract";
-	if (p.includes("/perf/") || p.includes("/performance/") || p.includes(".perf.")) return "performance";
-	if (p.includes("/security/") || p.includes("/sec/") || p.includes(".security.")) return "security";
-	if (p.includes("/regression/") || p.includes(".regr.") || p.includes(".regression.")) return "regression";
+	if (p.includes("/contract/") || p.includes("/pact/") || p.includes(".contract."))
+		return "contract";
+	if (p.includes("/perf/") || p.includes("/performance/") || p.includes(".perf."))
+		return "performance";
+	if (p.includes("/security/") || p.includes("/sec/") || p.includes(".security."))
+		return "security";
+	if (p.includes("/regression/") || p.includes(".regr.") || p.includes(".regression."))
+		return "regression";
 
 	// Ruby files default to unit
 	if (adapter.name === "ruby-rspec" || p.endsWith("_spec.rb")) return "unit";
@@ -115,14 +116,22 @@ export function generateSummaryFromLabel(itLabel: string, describeLabel?: string
  */
 export function idPrefixForType(type: TestType, config: SurfaceConfig): string {
 	switch (type) {
-		case "e2e": return config.idPrefixes.flow;
-		case "regression": return config.idPrefixes.regression;
-		case "contract": return config.idPrefixes.contract;
-		case "smoke": return config.idPrefixes.smoke;
-		case "performance": return config.idPrefixes.performance;
-		case "security": return config.idPrefixes.security;
-		case "functional": return config.idPrefixes.functional;
-		default: return config.idPrefixes.requirement;
+		case "e2e":
+			return config.idPrefixes.flow;
+		case "regression":
+			return config.idPrefixes.regression;
+		case "contract":
+			return config.idPrefixes.contract;
+		case "smoke":
+			return config.idPrefixes.smoke;
+		case "performance":
+			return config.idPrefixes.performance;
+		case "security":
+			return config.idPrefixes.security;
+		case "functional":
+			return config.idPrefixes.functional;
+		default:
+			return config.idPrefixes.requirement;
 	}
 }
 

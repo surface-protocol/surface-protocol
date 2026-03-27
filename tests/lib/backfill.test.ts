@@ -1,17 +1,15 @@
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
 	buildYamlBlock,
 	generateSummaryFromLabel,
-	idPrefixForType,
 	inferArea,
 	inferTestType,
 	injectYamlIntoContent,
 } from "../../src/lib/backfill.js";
-import { JS_BLOCK, HASH_BLOCK } from "../../src/lib/comment-formats.js";
+import { HASH_BLOCK, JS_BLOCK } from "../../src/lib/comment-formats.js";
 import "../../src/lib/adapters/index.js";
 import { getAdapter } from "../../src/lib/adapters/adapter.js";
 import { extractAllYamlBlocks } from "../../src/lib/parser.js";
@@ -114,10 +112,7 @@ describe("buildYamlBlock", () => {
 	});
 
 	it("generates a HASH_BLOCK with # prefixes", () => {
-		const block = buildYamlBlock(
-			{ req: "REQ-001", type: "unit", summary: "Test" },
-			HASH_BLOCK,
-		);
+		const block = buildYamlBlock({ req: "REQ-001", type: "unit", summary: "Test" }, HASH_BLOCK);
 		expect(block).toContain("#---");
 		// Each content line should start with "# "
 		const contentLines = block.split("\n").slice(1, -1);
