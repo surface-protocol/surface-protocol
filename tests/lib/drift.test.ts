@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { buildDriftReport, detectGhosts, detectStatusDrift, scanUntrackedTests } from "../../src/lib/drift.js";
+import { buildDriftReport, detectGhosts, scanUntrackedTests } from "../../src/lib/drift.js";
 import "../../src/lib/adapters/index.js";
 import { getAdapter } from "../../src/lib/adapters/adapter.js";
 import type { SurfaceMap } from "../../src/lib/types.js";
@@ -13,7 +13,16 @@ function makeSurfaceMap(overrides: Partial<SurfaceMap> = {}): SurfaceMap {
 		version: "2.0",
 		stats: {
 			total: 0,
-			by_type: { unit: 0, regression: 0, functional: 0, e2e: 0, contract: 0, performance: 0, security: 0, smoke: 0 },
+			by_type: {
+				unit: 0,
+				regression: 0,
+				functional: 0,
+				e2e: 0,
+				contract: 0,
+				performance: 0,
+				security: 0,
+				smoke: 0,
+			},
 			by_area: {},
 			by_tag: {},
 			coverage: { with_metadata: 0, without_metadata: 0 },
