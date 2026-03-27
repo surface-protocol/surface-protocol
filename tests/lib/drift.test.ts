@@ -61,6 +61,28 @@ describe("scanUntrackedTests", () => {
 		expect(trackedFiles.length).toBe(0);
 	});
 
+	it("does NOT flag tests under indented YAML blocks", async () => {
+		const adapter = getAdapter("typescript-vitest");
+		if (!adapter) throw new Error("adapter not found");
+
+		const untracked = await scanUntrackedTests(FIXTURES_DIR, adapter);
+
+		// indented.test.ts has tab-indented YAML blocks inside describe()
+		const indentedUntracked = untracked.filter((t) => t.file.includes("indented.test.ts"));
+		expect(indentedUntracked.length).toBe(0);
+	});
+
+	it("handles one YAML block covering multiple it() calls", async () => {
+		const adapter = getAdapter("typescript-vitest");
+		if (!adapter) throw new Error("adapter not found");
+
+		const untracked = await scanUntrackedTests(FIXTURES_DIR, adapter);
+
+		// indented.test.ts REQ-IND-001 covers 3 tests, REQ-IND-002 covers 1 — none should be untracked
+		const indentedTests = untracked.filter((t) => t.file.includes("indented"));
+		expect(indentedTests).toHaveLength(0);
+	});
+
 	it("returns UntrackedTest with file, line, and implementation fields", async () => {
 		const adapter = getAdapter("typescript-vitest");
 		if (!adapter) throw new Error("adapter not found");

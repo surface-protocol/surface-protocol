@@ -2,9 +2,9 @@
 	"generated": "2026-03-28T05:55:27.216Z",
 	"version": "2.0",
 	"stats": {
-		"total": 3,
+		"total": 5,
 		"by_type": {
-			"unit": 1,
+			"unit": 3,
 			"regression": 0,
 			"functional": 2,
 			"e2e": 0,
@@ -16,7 +16,8 @@
 		"by_area": {
 			"auth": 1,
 			"cart": 1,
-			"catalog": 1
+			"catalog": 1,
+			"core": 2
 		},
 		"by_tag": {
 			"auth": 1,
@@ -24,10 +25,11 @@
 			"security": 1,
 			"cart": 1,
 			"catalog": 1,
-			"backend": 1
+			"backend": 1,
+			"core": 2
 		},
 		"coverage": {
-			"with_metadata": 3,
+			"with_metadata": 5,
 			"without_metadata": 1
 		}
 	},
@@ -175,6 +177,78 @@
 				"acceptance_total": 3,
 				"acceptance_covered": 3,
 				"detected_from": "full-acceptance"
+			}
+		},
+		{
+			"id": "REQ-IND-001",
+			"type": "unit",
+			"area": "core",
+			"summary": "First indented block covers multiple tests",
+			"tags": [
+				"core"
+			],
+			"location": {
+				"file": "tests/indented.test.ts",
+				"line": 4,
+				"it": "first test under indented block"
+			},
+			"changed": [
+				{
+					"date": "2026-03-27",
+					"note": "Test for indented YAML support"
+				}
+			],
+			"authors": [],
+			"created": "2026-03-27",
+			"last_modified": "2026-03-27",
+			"status": "active",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "complete",
+				"detected_from": "has-assertions"
+			},
+			"lifecycle": {
+				"stage": "coded",
+				"acceptance_total": 0,
+				"acceptance_covered": 0,
+				"detected_from": "no-acceptance-criteria"
+			}
+		},
+		{
+			"id": "REQ-IND-002",
+			"type": "unit",
+			"area": "core",
+			"summary": "Second indented block",
+			"tags": [
+				"core"
+			],
+			"location": {
+				"file": "tests/indented.test.ts",
+				"line": 27,
+				"it": "test under second indented block"
+			},
+			"changed": [
+				{
+					"date": "2026-03-27",
+					"note": "Test for indented YAML support"
+				}
+			],
+			"authors": [],
+			"created": "2026-03-27",
+			"last_modified": "2026-03-27",
+			"status": "active",
+			"override": null,
+			"flaky": false,
+			"implementation": {
+				"state": "complete",
+				"detected_from": "has-assertions"
+			},
+			"lifecycle": {
+				"stage": "coded",
+				"acceptance_total": 0,
+				"acceptance_covered": 0,
+				"detected_from": "no-acceptance-criteria"
 			}
 		}
 	],

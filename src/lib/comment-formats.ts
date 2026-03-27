@@ -131,27 +131,57 @@ export function getCommentFormatNames(): string[] {
  * Returns a global regex that captures the YAML content between delimiters.
  */
 export function buildFrontmatterRegex(format: CommentFormat): RegExp {
-	return new RegExp(`${format.openPattern}([\\s\\S]*?)${format.closePattern}`, "g");
+	// Allow optional leading whitespace (tabs/spaces) before both delimiters.
+	// This handles YAML blocks indented inside describe() or context() blocks.
+	// The close pattern typically starts with \n, so we inject [ \t]* after it.
+	const closeWithIndent = format.closePattern.replace(/^\\n/, "\\n[ \\t]*");
+	return new RegExp(`[ \\t]*${format.openPattern}([\\s\\S]*?)${closeWithIndent}`, "g");
 }
 
 /**
  * Preprocess YAML content extracted from a comment block.
- * Strips line prefixes if the format defines one.
+ * Strips line prefixes if the format defines one, then dedents
+ * any common leading whitespace (handles indented YAML blocks).
  */
 export function preprocessYaml(content: string, format: CommentFormat): string {
-	if (!format.linePrefix) return content;
+	let processed = content;
 
-	return content
-		.split("\n")
-		.map((line) => {
-			if (line.startsWith(format.linePrefix!)) {
-				return line.slice(format.linePrefix!.length);
-			}
-			// Handle lines that are just the prefix without trailing content
-			if (line.trimEnd() === format.linePrefix!.trimEnd()) {
-				return "";
-			}
-			return line;
-		})
-		.join("\n");
+	if (format.linePrefix) {
+		processed = processed
+			.split("\n")
+			.map((line) => {
+				if (line.startsWith(format.linePrefix!)) {
+					return line.slice(format.linePrefix?.length);
+				}
+				// Handle lines that are just the prefix without trailing content
+				if (line.trimEnd() === format.linePrefix?.trimEnd()) {
+					return "";
+				}
+				return line;
+			})
+			.join("\n");
+	}
+
+	// Dedent: strip common leading whitespace (tabs/spaces) from all non-empty lines.
+	// This handles YAML blocks indented inside describe() or context() blocks.
+	return dedent(processed);
+}
+
+/**
+ * Remove common leading whitespace from all non-empty lines.
+ */
+function dedent(text: string): string {
+	const lines = text.split("\n");
+	const nonEmpty = lines.filter((l) => l.trim().length > 0);
+	if (nonEmpty.length === 0) return text;
+
+	const indent = nonEmpty.reduce((min, line) => {
+		const match = line.match(/^[ \t]*/);
+		const len = match ? match[0].length : 0;
+		return Math.min(min, len);
+	}, Number.POSITIVE_INFINITY);
+
+	if (indent === 0 || indent === Number.POSITIVE_INFINITY) return text;
+
+	return lines.map((l) => (l.trim().length > 0 ? l.slice(indent) : l)).join("\n");
 }

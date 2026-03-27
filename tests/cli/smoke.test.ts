@@ -104,7 +104,7 @@ describe("CLI smoke tests", () => {
 			const out = run(["gen"], join(FIXTURES, "vitest-project"));
 			expect(out).toContain("surface.json");
 			expect(out).toContain("SURFACE.md");
-			expect(out).toContain("Total requirements: 3");
+			expect(out).toContain("Total requirements: 5");
 		});
 
 		it("generates surface map from rspec fixture", () => {
@@ -118,7 +118,7 @@ describe("CLI smoke tests", () => {
 		it("reports coverage from vitest fixture", () => {
 			const out = run(["check"], join(FIXTURES, "vitest-project"));
 			expect(out).toContain("Coverage:");
-			expect(out).toContain("75.0");
+			expect(out).toContain("83.3");
 		});
 
 		it("identifies dangerous requirements", () => {
