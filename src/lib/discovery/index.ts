@@ -13,6 +13,10 @@ import "./commander-cli.js";
 import "./rails-routes.js";
 import "./graphql-schema.js";
 
-export { autoDetectAdapters, getAllDiscoveryAdapters, registerDiscoveryAdapter } from "./adapter.js";
 export type { DiscoveryAdapter } from "./adapter.js";
+export {
+	autoDetectAdapters,
+	getAllDiscoveryAdapters,
+	registerDiscoveryAdapter,
+} from "./adapter.js";
 export { linkCoverage } from "./coverage-linker.js";

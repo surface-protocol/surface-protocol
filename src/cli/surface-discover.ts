@@ -38,10 +38,7 @@ export function registerDiscoverCommand(program: Command): void {
 		.option("--uncovered", "Show only untested and untracked entry points")
 		.option("--exit-code", "Exit 1 if any untested entry points found")
 		.option("--coverage", "Show coverage percentages per type")
-		.option(
-			"--save",
-			"Save discovery results to surface.json (adds `discovered` section)",
-		)
+		.option("--save", "Save discovery results to surface.json (adds `discovered` section)")
 		.action(async (options) => {
 			const cwd = process.cwd();
 
@@ -74,9 +71,7 @@ export function registerDiscoverCommand(program: Command): void {
 			}
 
 			if (!options.json) {
-				console.log(
-					chalk.dim(`Detected adapters: ${adapters.map((a) => a.name).join(", ")}`),
-				);
+				console.log(chalk.dim(`Detected adapters: ${adapters.map((a) => a.name).join(", ")}`));
 			}
 
 			// Discover entry points from all adapters
@@ -99,12 +94,7 @@ export function registerDiscoverCommand(program: Command): void {
 			}
 
 			// Link coverage
-			const entryPoints = await linkCoverage(
-				cwd,
-				filtered,
-				surfaceMap,
-				config.testFilePatterns,
-			);
+			const entryPoints = await linkCoverage(cwd, filtered, surfaceMap, config.testFilePatterns);
 
 			// Build report
 			const report: DiscoveryReport = buildDiscoveryReport(entryPoints);
@@ -178,9 +168,7 @@ function printDiscoveryReport(report: DiscoveryReport, opts: PrintOpts): void {
 		const eps = byType.get(type);
 		if (!eps || eps.length === 0) continue;
 
-		const displayed = opts.uncoveredOnly
-			? eps.filter((ep) => ep.coverage !== "covered")
-			: eps;
+		const displayed = opts.uncoveredOnly ? eps.filter((ep) => ep.coverage !== "covered") : eps;
 
 		if (displayed.length === 0) continue;
 
@@ -190,7 +178,11 @@ function printDiscoveryReport(report: DiscoveryReport, opts: PrintOpts): void {
 			? chalk.dim(` (${coveredCount}/${eps.length} covered)`)
 			: "";
 
-		console.log(chalk.bold(`${typeLabel} (${displayed.length}${opts.uncoveredOnly ? " uncovered" : ""} / ${eps.length} total)${coverageNote}:`));
+		console.log(
+			chalk.bold(
+				`${typeLabel} (${displayed.length}${opts.uncoveredOnly ? " uncovered" : ""} / ${eps.length} total)${coverageNote}:`,
+			),
+		);
 
 		for (const ep of displayed.slice(0, 30)) {
 			const icon = coverageIcon(ep.coverage);
@@ -198,9 +190,7 @@ function printDiscoveryReport(report: DiscoveryReport, opts: PrintOpts): void {
 			const path = chalk.white(ep.path);
 			const file = chalk.dim(`  ${ep.file}:${ep.line}`);
 			const reqLabel =
-				ep.requirement_ids.length > 0
-					? chalk.dim(` [${ep.requirement_ids.join(", ")}]`)
-					: "";
+				ep.requirement_ids.length > 0 ? chalk.dim(` [${ep.requirement_ids.join(", ")}]`) : "";
 			const coverageLabel = coverageBadge(ep.coverage);
 
 			console.log(`  ${icon} ${method}${path}${file}${reqLabel} ${coverageLabel}`);
@@ -216,10 +206,14 @@ function printDiscoveryReport(report: DiscoveryReport, opts: PrintOpts): void {
 	console.log(`  Total entry points:  ${stats.total}`);
 	console.log(`  ${chalk.green("✓")} Covered:    ${stats.covered}`);
 	if (stats.untracked > 0) {
-		console.log(`  ${chalk.yellow("~")} Untracked:  ${stats.untracked}  ${chalk.dim("(tests exist but no surface metadata)")}`);
+		console.log(
+			`  ${chalk.yellow("~")} Untracked:  ${stats.untracked}  ${chalk.dim("(tests exist but no surface metadata)")}`,
+		);
 	}
 	if (stats.untested > 0) {
-		console.log(`  ${chalk.red("✗")} Untested:   ${stats.untested}  ${chalk.dim("(no test coverage)")}`);
+		console.log(
+			`  ${chalk.red("✗")} Untested:   ${stats.untested}  ${chalk.dim("(no test coverage)")}`,
+		);
 	}
 
 	if (stats.untracked > 0) {
@@ -227,9 +221,7 @@ function printDiscoveryReport(report: DiscoveryReport, opts: PrintOpts): void {
 	}
 	if (stats.untested > 0) {
 		console.log(
-			chalk.dim(
-				"→ Run `surface capture` for each untested entry point to create test stubs.",
-			),
+			chalk.dim("→ Run `surface capture` for each untested entry point to create test stubs."),
 		);
 	}
 }

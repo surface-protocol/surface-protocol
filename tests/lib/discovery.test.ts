@@ -1,10 +1,9 @@
-import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import "../../src/lib/discovery/index.js";
 import { getAllDiscoveryAdapters } from "../../src/lib/discovery/adapter.js";
-import { inferArea } from "../../src/lib/backfill.js";
 
 // =============================================================================
 // Discovery adapter registry
@@ -69,10 +68,7 @@ describe("package-scripts adapter", () => {
 	});
 
 	it("sets type to 'script' for all entries", async () => {
-		writeFileSync(
-			join(tmpDir, "package.json"),
-			JSON.stringify({ scripts: { build: "tsc" } }),
-		);
+		writeFileSync(join(tmpDir, "package.json"), JSON.stringify({ scripts: { build: "tsc" } }));
 		const adapter = getAllDiscoveryAdapters().find((a) => a.name === "package-scripts")!;
 		const eps = await adapter.discover(tmpDir);
 		for (const ep of eps) {

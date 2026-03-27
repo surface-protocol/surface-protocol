@@ -5,12 +5,11 @@
  * File paths in src/pages/ directly map to URL routes.
  */
 
-import { readdir, stat } from "node:fs/promises";
-import { join, relative, extname, basename } from "node:path";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile, stat } from "node:fs/promises";
+import { extname, join, relative } from "node:path";
 import type { RawEntryPoint } from "../types.js";
-import { registerDiscoveryAdapter } from "./adapter.js";
 import type { DiscoveryAdapter } from "./adapter.js";
+import { registerDiscoveryAdapter } from "./adapter.js";
 
 async function detect(dir: string): Promise<boolean> {
 	// Detect Astro: astro in deps OR src/pages/ directory exists

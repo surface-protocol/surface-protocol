@@ -12,8 +12,8 @@ import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { execFileNoThrow } from "../../utils/execFileNoThrow.js";
 import type { RawEntryPoint } from "../types.js";
-import { registerDiscoveryAdapter } from "./adapter.js";
 import type { DiscoveryAdapter } from "./adapter.js";
+import { registerDiscoveryAdapter } from "./adapter.js";
 
 const HTTP_METHODS = ["get", "post", "put", "patch", "delete", "options", "head", "all"];
 
@@ -72,7 +72,14 @@ async function discover(dir: string): Promise<RawEntryPoint[]> {
 			const beforeMatch = content.slice(0, match.index);
 			const line = beforeMatch.split("\n").length;
 
-			entryPoints.push({ type: "api", method, path, file: relFile, line, label: `${method} ${path}` });
+			entryPoints.push({
+				type: "api",
+				method,
+				path,
+				file: relFile,
+				line,
+				label: `${method} ${path}`,
+			});
 		}
 	}
 

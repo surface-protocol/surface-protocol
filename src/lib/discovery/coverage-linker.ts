@@ -10,9 +10,9 @@
  */
 
 import { readFile } from "node:fs/promises";
-import { join, relative, dirname, basename } from "node:path";
-import type { CoverageState, RawEntryPoint, Requirement, SurfaceEntryPoint, SurfaceMap } from "../types.js";
+import { basename, relative } from "node:path";
 import { findTestFiles } from "../parser.js";
+import type { RawEntryPoint, Requirement, SurfaceEntryPoint, SurfaceMap } from "../types.js";
 
 // =============================================================================
 // Entry point key normalization
@@ -26,9 +26,7 @@ function entryPointKey(ep: RawEntryPoint): string {
 // Explicit coverage (via `covers` field in test metadata)
 // =============================================================================
 
-function buildExplicitCoverageMap(
-	surfaceMap: SurfaceMap,
-): Map<string, string[]> {
+function buildExplicitCoverageMap(surfaceMap: SurfaceMap): Map<string, string[]> {
 	const map = new Map<string, string[]>();
 	const allReqs: Requirement[] = [
 		...surfaceMap.requirements,
@@ -103,10 +101,7 @@ function checkFileProximity(entryPointFile: string, testFiles: string[], dir: st
 // Find matching requirement IDs from surface.json via test file
 // =============================================================================
 
-function requirementIdsForTestFiles(
-	testFileRelPaths: string[],
-	surfaceMap: SurfaceMap,
-): string[] {
+function requirementIdsForTestFiles(testFileRelPaths: string[], surfaceMap: SurfaceMap): string[] {
 	const ids: string[] = [];
 	const allReqs: Requirement[] = [
 		...surfaceMap.requirements,
@@ -125,7 +120,7 @@ function requirementIdsForTestFiles(
 	return ids;
 }
 
-function hasTestFiles(testFileRelPaths: string[], surfaceMap: SurfaceMap): boolean {
+function _hasTestFiles(testFileRelPaths: string[], surfaceMap: SurfaceMap): boolean {
 	const allReqs: Requirement[] = [
 		...surfaceMap.requirements,
 		...surfaceMap.regressions,

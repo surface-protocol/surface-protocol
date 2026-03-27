@@ -8,8 +8,8 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { RawEntryPoint } from "../types.js";
-import { registerDiscoveryAdapter } from "./adapter.js";
 import type { DiscoveryAdapter } from "./adapter.js";
+import { registerDiscoveryAdapter } from "./adapter.js";
 
 async function detect(dir: string): Promise<boolean> {
 	try {
@@ -36,9 +36,7 @@ async function discover(dir: string): Promise<RawEntryPoint[]> {
 
 		for (const [name, command] of Object.entries(scripts)) {
 			// Find the line for this script
-			const scriptLine = pkgLines.findIndex(
-				(l, i) => i > scriptsStart && l.includes(`"${name}"`),
-			);
+			const scriptLine = pkgLines.findIndex((l, i) => i > scriptsStart && l.includes(`"${name}"`));
 			line = scriptLine >= 0 ? scriptLine + 1 : scriptsStart + 1;
 
 			entryPoints.push({

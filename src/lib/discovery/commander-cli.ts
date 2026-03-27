@@ -10,8 +10,8 @@ import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { findTestFiles } from "../parser.js";
 import type { RawEntryPoint } from "../types.js";
-import { registerDiscoveryAdapter } from "./adapter.js";
 import type { DiscoveryAdapter } from "./adapter.js";
+import { registerDiscoveryAdapter } from "./adapter.js";
 
 // Matches: program.command('name') or .command("name <arg>")
 const COMMAND_PATTERN = /\.command\s*\(\s*['"`]([^'"`]+)['"`]/g;

@@ -6,11 +6,11 @@
  */
 
 import { readFile } from "node:fs/promises";
-import { join, relative, extname } from "node:path";
+import { join, relative } from "node:path";
 import { findTestFiles } from "../parser.js";
 import type { RawEntryPoint } from "../types.js";
-import { registerDiscoveryAdapter } from "./adapter.js";
 import type { DiscoveryAdapter } from "./adapter.js";
+import { registerDiscoveryAdapter } from "./adapter.js";
 
 // Matches: type Query { or type Mutation { or type Subscription {
 const ROOT_TYPE_PATTERN = /type\s+(Query|Mutation|Subscription)\s*\{([^}]*)\}/gs;

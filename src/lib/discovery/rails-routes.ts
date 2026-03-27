@@ -8,8 +8,8 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { RawEntryPoint } from "../types.js";
-import { registerDiscoveryAdapter } from "./adapter.js";
 import type { DiscoveryAdapter } from "./adapter.js";
+import { registerDiscoveryAdapter } from "./adapter.js";
 
 async function detect(dir: string): Promise<boolean> {
 	try {
