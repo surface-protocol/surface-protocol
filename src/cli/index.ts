@@ -7,11 +7,13 @@
  */
 
 import { Command } from "commander";
+import { registerBackfillCommand } from "./surface-backfill.js";
 import { registerCheckCommand } from "./surface-check.js";
 import { registerGenCommand } from "./surface-gen.js";
 import { registerInitCommand } from "./surface-init.js";
 import { registerMetricsCommand } from "./surface-metrics.js";
 import { registerQueryCommand } from "./surface-query.js";
+import { registerScanCommand } from "./surface-scan.js";
 
 const program = new Command()
 	.name("surface")
@@ -21,6 +23,8 @@ const program = new Command()
 registerInitCommand(program);
 registerGenCommand(program);
 registerCheckCommand(program);
+registerScanCommand(program);
+registerBackfillCommand(program);
 registerQueryCommand(program);
 registerMetricsCommand(program);
 

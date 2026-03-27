@@ -1,5 +1,5 @@
 {
-	"generated": "2026-03-10T05:30:05.017Z",
+	"generated": "2026-03-27T04:07:06.585Z",
 	"version": "2.0",
 	"stats": {
 		"total": 3,
@@ -28,7 +28,7 @@
 		},
 		"coverage": {
 			"with_metadata": 3,
-			"without_metadata": 0
+			"without_metadata": 1
 		}
 	},
 	"requirements": [
@@ -183,5 +183,10 @@
 	"contracts": [],
 	"smoke": [],
 	"placeholders": [],
-	"gaps": []
+	"gaps": [
+		{
+			"file": "tests/untracked.test.ts",
+			"reason": "No metadata found"
+		}
+	]
 }
