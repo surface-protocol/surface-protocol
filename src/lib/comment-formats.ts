@@ -164,7 +164,36 @@ export function preprocessYaml(content: string, format: CommentFormat): string {
 
 	// Dedent: strip common leading whitespace (tabs/spaces) from all non-empty lines.
 	// This handles YAML blocks indented inside describe() or context() blocks.
-	return dedent(processed);
+	processed = dedent(processed);
+
+	// Escape YAML list items containing unquoted { or [ characters.
+	// People naturally write acceptance criteria like:
+	//   - GET /api/health returns { status: "ok" }
+	// which is invalid YAML (starts a flow mapping). Quote these values.
+	return escapeAmbiguousListItems(processed);
+}
+
+/**
+ * Quote YAML list items that contain unquoted { or [ characters.
+ * These are common in acceptance criteria (e.g. "returns { status: ok }") but
+ * are invalid unquoted YAML because they start flow mappings/sequences.
+ */
+function escapeAmbiguousListItems(text: string): string {
+	return text
+		.split("\n")
+		.map((line) => {
+			const listMatch = line.match(/^(\s*-\s+)(.+)$/);
+			if (!listMatch) return line;
+			const prefix = listMatch[1];
+			const value = listMatch[2];
+			if (!prefix || !value) return line;
+			// Skip if already quoted or is a YAML mapping (key: value)
+			if (value.startsWith('"') || value.startsWith("'")) return line;
+			// Only escape if contains { or [ that would confuse the YAML parser
+			if (!value.includes("{") && !value.includes("[")) return line;
+			return `${prefix}${JSON.stringify(value)}`;
+		})
+		.join("\n");
 }
 
 /**
