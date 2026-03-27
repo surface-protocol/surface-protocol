@@ -43,6 +43,34 @@ async function nextRequirementId(dir: string, prefix: string): Promise<string> {
 }
 
 /**
+ * Allocate N requirement IDs atomically from the shared counter.
+ * Used by `surface backfill` to batch-allocate IDs before injecting them.
+ */
+export async function allocateRequirementIds(
+	dir: string,
+	prefix: string,
+	count: number,
+): Promise<string[]> {
+	if (count <= 0) return [];
+	const counterPath = join(dir, ".surface/state/id-counter");
+	let counter = 0;
+	try {
+		const content = await readFile(counterPath, "utf-8");
+		counter = Number.parseInt(content.trim(), 10) || 0;
+	} catch {
+		// Counter file doesn't exist yet — start at 0
+	}
+	const ids: string[] = [];
+	for (let i = 0; i < count; i++) {
+		counter++;
+		ids.push(`${prefix}-${String(counter).padStart(3, "0")}`);
+	}
+	await ensureParentDir(counterPath);
+	await writeFile(counterPath, `${counter}\n`, "utf-8");
+	return ids;
+}
+
+/**
  * Capture a new requirement: create a normalized source doc and a test stub.
  *
  * Returns the assigned ID, the path to the test stub, and the path to the source doc.
