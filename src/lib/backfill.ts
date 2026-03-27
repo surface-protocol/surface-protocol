@@ -136,6 +136,21 @@ export function idPrefixForType(type: TestType, config: SurfaceConfig): string {
 }
 
 // =============================================================================
+// YAML Helpers
+// =============================================================================
+
+/**
+ * Quote a YAML value if it contains characters that would break parsing.
+ * Colons, braces, brackets, and hash signs all need quoting.
+ */
+function yamlSafeValue(value: string): string {
+	if (/[:{}[\]#&*?|>!%@`]/.test(value) || value.startsWith('"') || value.startsWith("'")) {
+		return JSON.stringify(value);
+	}
+	return value;
+}
+
+// =============================================================================
 // YAML Block Generation
 // =============================================================================
 
@@ -159,7 +174,7 @@ export function buildYamlBlock(metadata: Partial<TestMetadata>, format: CommentF
 	lines.push(`type: ${metadata.type ?? "unit"}`);
 	lines.push(`status: active`);
 	if (metadata.area) lines.push(`area: ${metadata.area}`);
-	lines.push(`summary: ${metadata.summary ?? "Backfilled requirement"}`);
+	lines.push(`summary: ${yamlSafeValue(metadata.summary ?? "Backfilled requirement")}`);
 
 	lines.push("source:");
 	lines.push("  type: implementation");
