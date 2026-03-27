@@ -156,11 +156,39 @@ The agent will recognize it and offer options: **capture**, **ship**, **just do 
 /surface:capture "Add user auth" and ship it
 ```
 
+### Drift Detection & Backfill
+
+When code is built or modified outside the protocol, use these commands to detect and fix the gap:
+
+| Command | Description |
+|---------|-------------|
+| `/surface:scan` | Detect drift: untracked tests, ghost entries, status changes |
+| `/surface:backfill` | Auto-annotate untracked tests with inferred YAML metadata |
+
+**Common scenario — adopting Surface Protocol on an existing codebase:**
+
+```bash
+# 1. Find tests without surface metadata
+npx surface scan
+
+# 2. Auto-annotate existing tests
+npx surface backfill --all --dry-run   # preview
+npx surface backfill --all --yes       # write
+
+# 3. Regenerate surface.json
+npx surface gen
+
+# 4. Verify clean
+npx surface scan --exit-code
+```
+
 ### Query & Validate
 
 | Command | Description |
 |---------|-------------|
 | `surface gen` | Generate surface.json + SURFACE.md + docs/features/ |
+| `surface scan` | Detect drift between tests and surface.json |
+| `surface backfill` | Auto-annotate untracked tests (bootstrap existing codebases) |
 | `surface check` | Validate coverage, freshness, gaps, overrides, lifecycle |
 | `surface check --coverage` | Coverage report by type and area |
 | `surface query --file <path>` | Requirements for a file |
