@@ -258,6 +258,10 @@ export interface TestMetadata {
 
 	// Audience impact
 	audience?: AudienceTag;
+
+	// Explicit coverage linkage to discovered entry points
+	// e.g. covers: ["POST /api/auth/login", "GET /api/auth/me"]
+	covers?: string[];
 }
 
 export interface JourneyStep {
@@ -500,6 +504,59 @@ export interface QueryResult {
 	total: number;
 	dangerous: boolean;
 	dangerous_requirements: string[];
+}
+
+// =============================================================================
+// Drift Detection Types (surface scan)
+// =============================================================================
+
+/**
+ * A test block (it/test) that has no YAML frontmatter.
+ */
+export interface UntrackedTest {
+	file: string; // relative path from project root
+	line: number; // line of the it() / test() call
+	describe?: string | undefined; // enclosing describe block label
+	it?: string | undefined; // test label from it() string arg
+	implementation: ImplementationStatus;
+}
+
+/**
+ * A requirement in surface.json whose test file no longer exists.
+ */
+export interface GhostEntry {
+	id: string; // REQ-XXX, FLOW-XXX, etc.
+	last_file: string; // file path recorded in surface.json
+	reason: "file-deleted" | "file-renamed";
+}
+
+/**
+ * A requirement where the actual implementation status differs from surface.json.
+ */
+export interface StatusDrift {
+	id: string;
+	file: string;
+	recorded: ImplementationState; // what surface.json says
+	actual: ImplementationState; // what detection finds now
+}
+
+/**
+ * Full drift report produced by `surface scan`.
+ */
+export interface DriftReport {
+	scanned_at: string; // ISO timestamp
+	untracked: UntrackedTest[]; // tests with no YAML metadata
+	ghosts: GhostEntry[]; // surface.json entries whose files are gone
+	status_drift: StatusDrift[]; // tests whose impl state changed
+	coverage_gaps: CoverageGap[]; // files with zero metadata
+	summary: {
+		total_test_files: number;
+		total_tracked: number;
+		total_untracked: number;
+		ghost_count: number;
+		drift_count: number;
+		clean: boolean;
+	};
 }
 
 // =============================================================================
