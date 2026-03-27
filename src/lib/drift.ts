@@ -55,8 +55,14 @@ export async function scanUntrackedTests(
 		const blocks = extractAllYamlBlocks(content);
 		const lines = content.split("\n");
 
-		// Build covered line ranges: YAML block start to endLine + 20 (covers the it() call after the block)
-		const coveredRanges: Array<[number, number]> = blocks.map((b) => [b.startLine, b.endLine + 20]);
+		// Build covered line ranges: each YAML block covers from its start to just before the next block starts.
+		// The last block covers to end of file. This handles the common pattern of one YAML block
+		// covering multiple it() calls within a describe.
+		const coveredRanges: Array<[number, number]> = blocks.map((b, i) => {
+			const nextBlock = blocks[i + 1];
+			const rangeEnd = nextBlock ? nextBlock.startLine - 1 : lines.length;
+			return [b.startLine, rangeEnd];
+		});
 
 		// Find all it() / test() calls using the adapter's itPattern
 		const itRegex = new RegExp(adapter.itPattern.source, "g");
