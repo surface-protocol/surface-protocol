@@ -100,6 +100,38 @@ describe("feature", () => {
 		expect(blocks).toHaveLength(1);
 		expect((blocks[0]?.yaml as Record<string, unknown>).req).toBe("REQ-020");
 	});
+
+	it("parses YAML with unquoted braces in acceptance criteria", () => {
+		const content = `/*---
+req: REQ-030
+type: unit
+summary: Health check
+acceptance:
+  - GET /api/health returns 200 with { status: "ok" }
+  - POST /api/data accepts { name: "test" }
+tags: [server, api]
+---*/
+it("test", () => {});`;
+		const blocks = extractAllYamlBlocks(content);
+		expect(blocks).toHaveLength(1);
+		const yaml = blocks[0]?.yaml as Record<string, unknown>;
+		expect(yaml.req).toBe("REQ-030");
+		expect(yaml.acceptance).toHaveLength(2);
+	});
+
+	it("parses YAML with unquoted brackets in list items", () => {
+		const content = `\t/*---
+\treq: REQ-040
+\ttype: unit
+\tsummary: CLI parsing
+\tacceptance:
+\t  - Parses "launch <url>" into { command: "launch", args: [url] }
+\t---*/
+\tit("test", () => {});`;
+		const blocks = extractAllYamlBlocks(content);
+		expect(blocks).toHaveLength(1);
+		expect((blocks[0]?.yaml as Record<string, unknown>).req).toBe("REQ-040");
+	});
 });
 
 describe("parseTestFileContent", () => {
