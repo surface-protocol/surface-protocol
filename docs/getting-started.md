@@ -77,6 +77,50 @@ npx surface gen
 npx surface check
 ```
 
+## Adopting Surface Protocol on an Existing Codebase
+
+If your product was built before Surface Protocol (or had features added outside the protocol), use `surface scan` and `surface backfill` to catch up without losing history.
+
+### Step 1 — Find tests that have no surface metadata
+
+```bash
+npx surface scan
+```
+
+Shows tests that exist but haven't been annotated with YAML frontmatter. These are the easiest to catch up on.
+
+### Step 2 — Backfill surface metadata for existing tests
+
+```bash
+npx surface backfill --all --dry-run   # preview
+npx surface backfill --all --yes       # write
+```
+
+Injects inferred YAML metadata into all untracked tests. IDs are auto-allocated, areas and types are inferred from file paths. **Backfilled annotations are drafts — review and refine them.**
+
+### Step 3 — Lock the surface
+
+Run `surface gen` to regenerate `surface.json` with all the new metadata. This establishes the known-good baseline that the protocol will protect going forward.
+
+```bash
+npx surface gen
+npx surface scan --exit-code   # should exit 0
+```
+
+---
+
+## Ongoing Workflow
+
+Add `surface scan --exit-code` to your CI pipeline to catch drift as it happens:
+
+```yaml
+# .github/workflows/surface.yml
+- name: Surface drift check
+  run: npx surface scan --exit-code
+```
+
+---
+
 ## Next Steps
 
 - [Configuration](configuration.md) — all settings, output paths, monorepo setup
