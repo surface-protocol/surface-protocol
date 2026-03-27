@@ -183,4 +183,24 @@ describe("buildDriftReport", () => {
 		expect(report.summary.clean).toBe(false);
 		expect(report.summary.total_untracked).toBeGreaterThan(0);
 	});
+
+	it("drops stale coverage gaps when file now has YAML blocks", async () => {
+		const adapter = getAdapter("typescript-vitest");
+		if (!adapter) throw new Error("adapter not found");
+
+		// Pretend auth.test.ts was listed as a gap — it has YAML, so should be dropped
+		const surfaceMap = makeSurfaceMap({
+			gaps: [
+				{ file: "tests/auth.test.ts", reason: "No metadata found" },
+				{ file: "tests/untracked.test.ts", reason: "No metadata found" },
+			],
+		});
+
+		const report = await buildDriftReport(FIXTURES_DIR, surfaceMap, adapter);
+
+		// auth.test.ts has YAML → gap should be removed
+		// untracked.test.ts has no YAML → gap should remain
+		expect(report.coverage_gaps).toHaveLength(1);
+		expect(report.coverage_gaps[0]?.file).toBe("tests/untracked.test.ts");
+	});
 });
