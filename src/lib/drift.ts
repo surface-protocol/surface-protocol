@@ -10,8 +10,8 @@
 import { execFileSync } from "node:child_process";
 import { access, readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
-import { detectImplementationStatus } from "./detect-implementation-status.js";
 import type { StackAdapter } from "./adapters/adapter.js";
+import { detectImplementationStatus } from "./detect-implementation-status.js";
 import { extractAllYamlBlocks, findTestFiles } from "./parser.js";
 import type {
 	CoverageGap,

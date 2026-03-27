@@ -55,12 +55,7 @@ export function registerScanCommand(program: Command): void {
 				process.exit(2);
 			}
 
-			const report = await buildDriftReport(
-				cwd,
-				surfaceMap,
-				adapter,
-				config.testFilePatterns,
-			);
+			const report = await buildDriftReport(cwd, surfaceMap, adapter, config.testFilePatterns);
 
 			if (options.json) {
 				console.log(formatJson(report));
@@ -68,8 +63,7 @@ export function registerScanCommand(program: Command): void {
 				return;
 			}
 
-			const filterAll =
-				!options.untracked && !options.ghosts && !options.statusDrift;
+			const filterAll = !options.untracked && !options.ghosts && !options.statusDrift;
 
 			printScanReport(report, {
 				showUntracked: filterAll || options.untracked,
@@ -127,7 +121,8 @@ function printScanReport(report: DriftReport, opts: PrintOptions): void {
 		console.log(chalk.bold.red(`Ghost Entries (${report.ghosts.length}):`));
 		if (!opts.quiet) {
 			for (const g of report.ghosts) {
-				const reason = g.reason === "file-renamed" ? chalk.yellow("[renamed]") : chalk.red("[deleted]");
+				const reason =
+					g.reason === "file-renamed" ? chalk.yellow("[renamed]") : chalk.red("[deleted]");
 				console.log(`  ${chalk.bold(g.id)}  ${g.last_file}  ${reason}`);
 			}
 		}
