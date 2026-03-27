@@ -267,6 +267,39 @@ export async function detectStatusDrift(
 }
 
 // =============================================================================
+// Coverage Gap Revalidation
+// =============================================================================
+
+/**
+ * Re-check files listed as coverage gaps in surface.json.
+ * A gap is stale if the file now contains parseable YAML blocks
+ * (e.g. after parser improvements or manual annotation).
+ */
+async function revalidateGaps(dir: string, gaps: CoverageGap[]): Promise<CoverageGap[]> {
+	const valid: CoverageGap[] = [];
+
+	for (const gap of gaps) {
+		const absFile = join(dir, gap.file);
+		let content: string;
+		try {
+			content = await readFile(absFile, "utf-8");
+		} catch {
+			// File deleted — gap is moot (ghost detection handles this)
+			continue;
+		}
+
+		const blocks = extractAllYamlBlocks(content);
+		if (blocks.length === 0) {
+			// Still a real gap
+			valid.push(gap);
+		}
+		// else: file now has metadata, gap is stale — drop it
+	}
+
+	return valid;
+}
+
+// =============================================================================
 // Full Drift Report
 // =============================================================================
 
@@ -285,7 +318,9 @@ export async function buildDriftReport(
 		detectStatusDrift(dir, surfaceMap),
 	]);
 
-	const coverage_gaps: CoverageGap[] = surfaceMap.gaps ?? [];
+	// Re-check coverage gaps: surface.json may list a file as "no metadata"
+	// but the parser may now detect blocks (e.g. after fixing indented YAML support).
+	const coverage_gaps = await revalidateGaps(dir, surfaceMap.gaps ?? []);
 
 	const allReqs = [
 		...surfaceMap.requirements,
