@@ -28,7 +28,7 @@
 		},
 		"coverage": {
 			"with_metadata": 3,
-			"without_metadata": 0
+			"without_metadata": 1
 		}
 	},
 	"requirements": [
@@ -183,5 +183,10 @@
 	"contracts": [],
 	"smoke": [],
 	"placeholders": [],
-	"gaps": []
+	"gaps": [
+		{
+			"file": "tests/untracked.test.ts",
+			"reason": "No metadata found"
+		}
+	]
 }
