@@ -153,6 +153,98 @@ describe("injectYamlIntoContent", () => {
 		expect(result).toContain("line2");
 		expect(result).toContain("line3");
 	});
+
+	it("matches tab indentation of the target it() line", () => {
+		const content = [
+			"describe('suite', () => {",
+			"\tit('first test', () => {});",
+			"\tit('second test', () => {});",
+			"});",
+		].join("\n");
+
+		const yamlBlock = "/*---\nreq: REQ-001\ntype: unit\nsummary: test\n---*/";
+		const result = injectYamlIntoContent(content, 2, yamlBlock);
+
+		const lines = result.split("\n");
+		const openLine = lines.find((l) => l.includes("/*---"));
+		const closeLine = lines.find((l) => l.includes("---*/"));
+		const reqLine = lines.find((l) => l.includes("req: REQ-001"));
+
+		// All YAML lines should be tab-indented to match the it() line
+		expect(openLine).toBe("\t/*---");
+		expect(closeLine).toBe("\t---*/");
+		expect(reqLine).toBe("\treq: REQ-001");
+	});
+
+	it("matches space indentation of the target it() line", () => {
+		const content = ["describe('suite', () => {", "    it('test', () => {});", "});"].join("\n");
+
+		const yamlBlock = "/*---\nreq: REQ-001\n---*/";
+		const result = injectYamlIntoContent(content, 2, yamlBlock);
+
+		const lines = result.split("\n");
+		const openLine = lines.find((l) => l.includes("/*---"));
+		expect(openLine).toBe("    /*---");
+	});
+
+	it("preserves column-0 injection when target is not indented", () => {
+		const content = "it('top-level test', () => {});\n";
+
+		const yamlBlock = "/*---\nreq: REQ-001\n---*/";
+		const result = injectYamlIntoContent(content, 1, yamlBlock);
+
+		const lines = result.split("\n");
+		const openLine = lines.find((l) => l.includes("/*---"));
+		expect(openLine).toBe("/*---");
+	});
+
+	it("indented blocks round-trip through extractAllYamlBlocks", () => {
+		const content = [
+			"describe('suite', () => {",
+			"\tit('first', () => { expect(1).toBe(1); });",
+			"\tit('second', () => { expect(2).toBe(2); });",
+			"});",
+		].join("\n");
+
+		const yamlBlock = "/*---\nreq: REQ-001\ntype: unit\nsummary: First test\n---*/";
+		const result = injectYamlIntoContent(content, 2, yamlBlock);
+
+		const blocks = extractAllYamlBlocks(result);
+		expect(blocks).toHaveLength(1);
+		expect((blocks[0]?.yaml as Record<string, unknown>).req).toBe("REQ-001");
+	});
+
+	it("multiple reverse-order injections all get correct indentation", () => {
+		const content = [
+			"describe('suite', () => {",
+			"\tit('first', () => { expect(1).toBe(1); });",
+			"\tit('second', () => { expect(2).toBe(2); });",
+			"\tit('third', () => { expect(3).toBe(3); });",
+			"});",
+		].join("\n");
+
+		const yamlBlock1 = "/*---\nreq: REQ-001\ntype: unit\nsummary: First\n---*/";
+		const yamlBlock2 = "/*---\nreq: REQ-002\ntype: unit\nsummary: Second\n---*/";
+		const yamlBlock3 = "/*---\nreq: REQ-003\ntype: unit\nsummary: Third\n---*/";
+
+		// Inject in reverse order (bottom to top) as backfillFile does
+		let result = injectYamlIntoContent(content, 4, yamlBlock3);
+		result = injectYamlIntoContent(result, 3, yamlBlock2);
+		result = injectYamlIntoContent(result, 2, yamlBlock1);
+
+		const blocks = extractAllYamlBlocks(result);
+		expect(blocks).toHaveLength(3);
+		expect((blocks[0]?.yaml as Record<string, unknown>).req).toBe("REQ-001");
+		expect((blocks[1]?.yaml as Record<string, unknown>).req).toBe("REQ-002");
+		expect((blocks[2]?.yaml as Record<string, unknown>).req).toBe("REQ-003");
+
+		// All blocks should be tab-indented
+		const lines = result.split("\n");
+		const openLines = lines.filter((l) => l.includes("/*---"));
+		for (const ol of openLines) {
+			expect(ol).toBe("\t/*---");
+		}
+	});
 });
 
 // =============================================================================
