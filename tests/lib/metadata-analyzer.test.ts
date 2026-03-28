@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import "../../src/lib/adapters/index.js";
@@ -6,6 +7,7 @@ import { analyzeExistingMetadata } from "../../src/lib/metadata-analyzer.js";
 
 const FIXTURES_DIR = join(import.meta.dirname, "../fixtures/vitest-project");
 const LAUNCHPAD_DIR = "/Users/ziadsawalha/code/launchpad";
+const hasLaunchpad = existsSync(LAUNCHPAD_DIR);
 
 describe("analyzeExistingMetadata", () => {
 	it("returns style guide from vitest fixture project", async () => {
@@ -24,7 +26,6 @@ describe("analyzeExistingMetadata", () => {
 		const adapter = getAdapter("typescript-vitest");
 		if (!adapter) throw new Error("adapter not found");
 
-		// Use a dir with no test files
 		const guide = await analyzeExistingMetadata("/tmp", adapter);
 
 		expect(guide.totalBlocks).toBe(0);
@@ -36,13 +37,12 @@ describe("analyzeExistingMetadata", () => {
 		expect(guide.exampleBlocks).toEqual([]);
 	});
 
-	it("detects rationale and acceptance in launchpad metadata", async () => {
+	it.skipIf(!hasLaunchpad)("detects rationale and acceptance in launchpad metadata", async () => {
 		const adapter = getAdapter("typescript-vitest");
 		if (!adapter) throw new Error("adapter not found");
 
 		const guide = await analyzeExistingMetadata(LAUNCHPAD_DIR, adapter);
 
-		// Launchpad has rich metadata with rationale and acceptance
 		expect(guide.totalBlocks).toBeGreaterThan(10);
 		expect(guide.hasRationale).toBe(true);
 		expect(guide.hasAcceptance).toBe(true);
@@ -50,28 +50,26 @@ describe("analyzeExistingMetadata", () => {
 		expect(guide.areas).toContain("analyzer");
 	});
 
-	it("computes meaningful tests-per-requirement ratio", async () => {
+	it.skipIf(!hasLaunchpad)("computes meaningful tests-per-requirement ratio", async () => {
 		const adapter = getAdapter("typescript-vitest");
 		if (!adapter) throw new Error("adapter not found");
 
 		const guide = await analyzeExistingMetadata(LAUNCHPAD_DIR, adapter);
 
-		// Launchpad groups ~4 tests per YAML block on average
 		expect(guide.avgTestsPerRequirement).toBeGreaterThan(1);
 		expect(guide.avgTestsPerRequirement).toBeLessThan(20);
 	});
 
-	it("extracts common tags sorted by frequency", async () => {
+	it.skipIf(!hasLaunchpad)("extracts common tags sorted by frequency", async () => {
 		const adapter = getAdapter("typescript-vitest");
 		if (!adapter) throw new Error("adapter not found");
 
 		const guide = await analyzeExistingMetadata(LAUNCHPAD_DIR, adapter);
 
-		// Should have tags — "core" is common in launchpad
 		expect(guide.commonTags.length).toBeGreaterThan(0);
 	});
 
-	it("selects example blocks with richest metadata first", async () => {
+	it.skipIf(!hasLaunchpad)("selects example blocks with richest metadata first", async () => {
 		const adapter = getAdapter("typescript-vitest");
 		if (!adapter) throw new Error("adapter not found");
 
@@ -80,7 +78,6 @@ describe("analyzeExistingMetadata", () => {
 		expect(guide.exampleBlocks.length).toBeGreaterThan(0);
 		expect(guide.exampleBlocks.length).toBeLessThanOrEqual(5);
 
-		// Examples should have file and area
 		for (const ex of guide.exampleBlocks) {
 			expect(ex.file).toBeTruthy();
 			expect(ex.raw).toBeTruthy();
