@@ -1,5 +1,5 @@
 {
-	"generated": "2026-03-10T05:30:05.177Z",
+	"generated": "2026-03-28T05:55:31.171Z",
 	"version": "2.0",
 	"stats": {
 		"total": 3,
@@ -45,7 +45,7 @@
 				"SKU must be unique"
 			],
 			"location": {
-				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/rspec-project/spec/models/product_spec.rb",
+				"file": "spec/models/product_spec.rb",
 				"line": 1,
 				"describe": "Product",
 				"it": "requires a name (REQ-002)"
@@ -94,7 +94,7 @@
 				"Accepts valid email"
 			],
 			"location": {
-				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/rspec-project/spec/models/user_spec.rb",
+				"file": "spec/models/user_spec.rb",
 				"line": 1,
 				"describe": "User validation",
 				"it": "validates email format (REQ-001)"
@@ -140,7 +140,7 @@
 				"Rate limits after 5 failed attempts"
 			],
 			"location": {
-				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/rspec-project/spec/requests/auth_spec.rb",
+				"file": "spec/requests/auth_spec.rb",
 				"line": 1,
 				"describe": "Login endpoint",
 				"it": "returns 200 with valid credentials (REQ-003)"

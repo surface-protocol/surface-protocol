@@ -1,5 +1,5 @@
 {
-	"generated": "2026-03-10T05:30:05.017Z",
+	"generated": "2026-03-28T05:55:27.216Z",
 	"version": "2.0",
 	"stats": {
 		"total": 3,
@@ -49,7 +49,7 @@
 				"Account lockout after 5 failed attempts"
 			],
 			"location": {
-				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/vitest-project/tests/auth.test.ts",
+				"file": "tests/auth.test.ts",
 				"line": 3,
 				"describe": "auth",
 				"it": "requires valid credentials (REQ-001)"
@@ -94,7 +94,7 @@
 				"Duplicate items increment quantity"
 			],
 			"location": {
-				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/vitest-project/tests/cart.test.ts",
+				"file": "tests/cart.test.ts",
 				"line": 3,
 				"describe": "cart",
 				"it": "adds item with correct quantity (REQ-003)"
@@ -143,7 +143,7 @@
 				"Returns total count in response"
 			],
 			"location": {
-				"file": "/Users/ziadsawalha/code/surface-protocol/surface-protocol/tests/fixtures/vitest-project/tests/catalog.test.ts",
+				"file": "tests/catalog.test.ts",
 				"line": 3,
 				"describe": "catalog",
 				"it": "returns paginated product list (REQ-002)"
