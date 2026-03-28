@@ -25,6 +25,7 @@ describe("CLI smoke tests", () => {
 			expect(out).toContain("check");
 			expect(out).toContain("scan");
 			expect(out).toContain("backfill");
+			expect(out).toContain("discover");
 			expect(out).toContain("query");
 			expect(out).toContain("metrics");
 		});
@@ -46,6 +47,16 @@ describe("CLI smoke tests", () => {
 			expect(out).toContain("--all");
 			expect(out).toContain("--dry-run");
 			expect(out).toContain("--file");
+		});
+	});
+
+	describe("surface discover --help", () => {
+		it("shows discover command options", () => {
+			const out = run(["discover", "--help"]);
+			expect(out).toContain("entry point");
+			expect(out).toContain("--json");
+			expect(out).toContain("--type");
+			expect(out).toContain("--uncovered");
 		});
 	});
 

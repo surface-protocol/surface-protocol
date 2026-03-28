@@ -136,6 +136,7 @@ Add `surface scan --exit-code` to your CI pipeline to catch drift as it happens:
 
 ## Next Steps
 
+- [Surface Discovery](surface-discovery.md) — how code surface analysis works
 - [Configuration](configuration.md) — all settings, output paths, monorepo setup
 - [YAML Reference](yaml-reference.md) — all metadata fields
 - [CLI Reference](cli-reference.md) — all commands
