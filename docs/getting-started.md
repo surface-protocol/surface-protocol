@@ -79,24 +79,37 @@ npx surface check
 
 ## Adopting Surface Protocol on an Existing Codebase
 
-If your product was built before Surface Protocol (or had features added outside the protocol), use `surface scan` and `surface backfill` to catch up without losing history.
+If your product was built before Surface Protocol (or had features added outside the protocol), use `surface scan` and `/surface:backfill` to catch up without losing history.
 
-### Step 1 — Find tests that have no surface metadata
+### Step 1 — Find tests without surface metadata
 
 ```bash
 npx surface scan
 ```
 
-Shows tests that exist but haven't been annotated with YAML frontmatter. These are the easiest to catch up on.
+Shows tests that exist but haven't been annotated with YAML frontmatter.
 
-### Step 2 — Backfill surface metadata for existing tests
+### Step 2 — Smart backfill with `/surface:backfill`
+
+In Claude Code, run:
+
+```
+/surface:backfill
+```
+
+This is the recommended path. The skill:
+1. Groups tests by `describe` block (one requirement per group, not per test)
+2. Reads your implementation code to understand what each test exercises
+3. Uses product context from CLAUDE.md to write meaningful rationale
+4. Generates acceptance criteria from `it()` labels
+5. Presents each group for your approval before writing
+
+**For fast bootstrapping without enrichment** (CI or batch mode):
 
 ```bash
 npx surface backfill --all --dry-run   # preview
-npx surface backfill --all --yes       # write
+npx surface backfill --all --yes       # write (bare-bones metadata only)
 ```
-
-Injects inferred YAML metadata into all untracked tests. IDs are auto-allocated, areas and types are inferred from file paths. **Backfilled annotations are drafts — review and refine them.**
 
 ### Step 3 — Lock the surface
 

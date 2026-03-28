@@ -1,18 +1,15 @@
 ---
 name: surface:backfill
 description: |
-  Auto-annotate untracked tests with inferred YAML metadata.
-  Use to bootstrap Surface Protocol on an existing codebase, or to catch up
-  after building features outside the protocol.
-  Triggers on: "/surface:backfill", "annotate untracked tests", "bootstrap surface protocol",
-  "add metadata to existing tests", "backfill surface", "catch up surface",
-  after /surface:scan shows untracked tests.
-version: 1.0.0
+  Auto-annotate untracked tests with context-aware YAML metadata.
+  Triggers ONLY on explicit "/surface:backfill" invocation.
+  Generates enriched metadata with rationale, acceptance criteria, and tags
+  by analyzing product context, existing metadata patterns, and implementation code.
+version: 2.0.0
 tags:
   - surface-protocol
   - backfill
   - bootstrap
-  - drift
 tools:
   - Read
   - Write
@@ -26,119 +23,148 @@ context: fork
 
 # /surface:backfill
 
-Auto-annotate untracked tests with inferred YAML metadata.
+Annotate untracked tests with enriched YAML metadata — including rationale, acceptance criteria, and tags.
 
 ## When to Use
 
 - After `/surface:scan` shows untracked tests
 - When adopting Surface Protocol on an existing codebase
-- After building a feature quickly without the protocol
-- When a test was added directly without using `/surface:capture`
+- After building features outside the protocol
 
-## Workflow
+## Mode Selection
 
-### Step 1: Run a dry-run preview
+- `/surface:backfill` — **smart mode** (default): analyzes code, groups tests, generates rich metadata
+- `/surface:backfill --basic` — **basic mode**: fast structural injection only (no enrichment)
 
-```bash
-surface backfill --all --dry-run
-```
+## Smart Backfill Workflow
 
-Show the user what would be injected:
+### Step 1: Learn from existing metadata
 
-```
-DRY RUN — no files will be modified
-
-Would annotate 12 tests across 4 files:
-
-  src/auth/session.test.ts:45    unit/auth    "auth: handles token refresh"
-  src/auth/session.test.ts:67    unit/auth    "auth: expires after timeout"
-  src/billing/invoice.test.ts:23 unit/billing "billing: creates invoice"
-  ...
-```
-
-### Step 2: Confirm with the user
-
-Ask: "I found **12 untracked tests** across **4 files**. The annotations above are inferred from file paths and test names. Should I inject them?"
-
-Options to offer:
-- "Yes, backfill all" → `surface backfill --all --yes`
-- "Specific file only" → `surface backfill --file <path> --yes`
-- "Cancel"
-
-### Step 3: Run the backfill
+Run the scan and analyze what metadata already exists:
 
 ```bash
-surface backfill --all --yes
+surface backfill --all --dry-run --json
 ```
 
-This injects YAML frontmatter before each untracked `it()` call, then runs `surface gen` automatically.
+Parse the JSON output. It provides:
+- Test groups (by file + describe block)
+- Imported modules (implementation code each test exercises)
+- Inferred type and area
 
-### Step 4: Report results
+Also examine existing YAML metadata in the project to understand the conventions:
+- What areas are in use?
+- Do existing blocks include rationale and acceptance criteria?
+- What tags are common?
+- How many tests are grouped per YAML block?
+
+Read 3-5 existing YAML blocks as style examples. Match this style when generating new metadata.
+
+### Step 2: Assess product context
+
+You already have product context from CLAUDE.md (loaded into this conversation). Reflect on:
+- What does this product do?
+- What are its main components/areas?
+- What's the user-facing purpose of each feature area?
+
+If CLAUDE.md is absent or thin, read `README.md` for product context. If neither exists, ask the user:
+> "I need to understand what this product does to write good metadata. Can you describe it in a sentence or two?"
+
+### Step 3: Enrich each test group
+
+For each group from the JSON output, generate enriched metadata:
+
+1. **Read the implementation code** — follow the `imported_modules` paths to understand what the tests exercise
+2. **Read adjacent metadata** — if the same file has other YAML blocks, match their style
+3. **Generate metadata** with these fields:
+
+| Field | How to generate |
+|-------|----------------|
+| `req` | Allocate from `surface backfill` (use CLI for ID allocation) |
+| `type` | From the `inferred.type` in JSON output |
+| `area` | From `inferred.area`, refined by product knowledge |
+| `summary` | 1-line description of what the test group verifies, informed by describe label and product context |
+| `rationale` | 2-3 sentences: why this feature matters to users, referencing product context from CLAUDE.md |
+| `acceptance` | Convert each `it()` label into a clean acceptance criterion |
+| `tags` | Area tag + relevant category tags (match existing tag conventions) |
+
+4. **Present to user for approval** — show the enriched block and ask to approve, edit, or skip
+
+Example output to present:
 
 ```
-+----------------------------------------------------------------------+
-|                     SURFACE BACKFILL COMPLETE                        |
-+----------------------------------------------------------------------+
-|  ANNOTATED: 12 tests across 4 files                                  |
-|    src/auth/session.test.ts     +3 annotations (REQ-043..REQ-045)   |
-|    src/billing/invoice.test.ts  +5 annotations (REQ-046..REQ-050)   |
-|    src/checkout/cart.test.ts    +4 annotations (REQ-051..REQ-054)   |
-|    src/users/profile.test.ts    +0 annotations (no untracked)       |
-|  ERRORS: 0                                                           |
-|                                                                      |
-|  ⚠ THESE ARE DRAFT ANNOTATIONS                                      |
-|  Review and update:                                                  |
-|    - summary (inferred from test names — may be vague)               |
-|    - area (inferred from file path)                                  |
-|    - Add rationale and acceptance criteria                           |
-+----------------------------------------------------------------------+
+Group: getBaseUrl (src/cli/__tests__/cli.test.ts, 7 tests)
+
+  /*---
+  req: REQ-474
+  type: unit
+  status: active
+  area: cli
+  summary: CLI server endpoint resolution with priority fallback
+  rationale: |
+    The CLI needs flexible server configuration for local development,
+    remote servers, and CI environments. Resolution follows a strict
+    priority: --server flag > LAUNCHPAD_SERVER env var > --port > default.
+  acceptance:
+    - Returns --server flag value when provided
+    - Strips trailing slash from server URLs
+    - Reads LAUNCHPAD_SERVER env var as fallback
+    - Falls back to --port on localhost
+    - Defaults to http://localhost:3001
+    - --server flag takes priority over --port
+    - Strips trailing slash from env var
+  tags: [cli, core]
+  source:
+    type: implementation
+    ref: implementation-discovery
+  changed:
+    - date: 2026-03-28
+      commit: pending
+      note: Backfilled by surface backfill — review and update
+  ---*/
 ```
 
-### Step 5: Prompt for review
+### Step 4: Write approved metadata
 
-Tell the user: "Backfilled annotations use `source.type: implementation` to signal they were inferred — not specified. Before relying on them, review:
-- **summaries** — test labels are often informal; rephrase as user-facing requirements
-- **areas** — inferred from file paths; adjust if the grouping is wrong
-- **acceptance criteria** — none are added automatically; add them where important
+For each approved group:
+1. Use the Edit tool to inject the YAML block **before the describe() line**, matching its indentation
+2. Place one block per describe group (not one per `it()` call)
+3. After all groups are written, run `surface gen` to update surface.json
 
-Run `/surface:capture <id>` to enrich specific requirements."
+### Step 5: Report results
 
-## What Gets Injected
+Summarize what was written:
+- How many groups annotated
+- How many tests covered
+- Any groups that were skipped
+- Remind user that annotations are drafts marked with `source.type: implementation`
 
-Example of a backfilled annotation:
+## When to Ask the User
 
-```typescript
-/*---
-req: REQ-043
-type: unit
-status: active
-area: auth
-summary: auth: handles token refresh
-source:
-  type: implementation
-  ref: implementation-discovery
-changed:
-  - date: 2026-03-27
-    commit: pending
-    note: Backfilled by surface backfill — review and update
----*/
-it("handles token refresh", () => {
-  // existing test code — unchanged
-});
+**Ask when:**
+- No CLAUDE.md and no README — "What does this product do?"
+- Area is ambiguous — "Which area does `tests/helpers.test.ts` belong to?"
+- Feature purpose is unclear from code alone — "What's the user-facing purpose of [function]?"
+
+**Don't ask when:**
+- CLAUDE.md provides sufficient product context
+- Area is clear from file path
+- Implementation code makes the purpose obvious
+- Tests are clearly grouped by describe block
+
+## Basic Mode (`--basic`)
+
+When invoked with `--basic`, skip enrichment and use the CLI directly:
+
+```bash
+surface backfill --all --dry-run    # preview
+surface backfill --all --yes        # write
 ```
 
-## Inference Rules
-
-| Field | How it's inferred |
-|-------|------------------|
-| `area` | First meaningful path segment (`src/auth/` → `auth`) |
-| `type` | Path hints: `/e2e/` → `e2e`, `/smoke/` → `smoke`, default → `unit` |
-| `summary` | Cleaned test label + describe context prefix |
-| `id` | Auto-allocated from `.surface/state/id-counter` |
-| `source.type` | Always `implementation` (signals "inferred, needs review") |
+This produces bare-bones metadata (ID, type, area, summary only) — one annotation per `it()` call. Useful for fast bootstrapping when you'll refine metadata later.
 
 ## Safety
 
-- Tests are processed in **reverse line order** per file — no line number shifts
-- A round-trip check verifies injection succeeded — if it fails, the file is restored
-- Use `--dry-run` first to preview; then run without it to write
+- YAML injection is done via Edit tool with exact line targeting
+- Tests are processed in reverse order per file to avoid line shifts
+- Round-trip verification: if the parser can't read back what was written, the file is restored
+- All backfilled annotations are marked `source.type: implementation` to signal "auto-generated"

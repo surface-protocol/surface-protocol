@@ -18,6 +18,7 @@ import { spawnSync } from "node:child_process";
 import { backfillFile, idPrefixForType, inferArea, inferTestType } from "../lib/backfill.js";
 import { loadConfig } from "../lib/config.js";
 import { buildDriftReport } from "../lib/drift.js";
+import { groupUntrackedByDescribe, populateImports } from "../lib/enrichment-helpers.js";
 import { formatJson } from "../lib/formatters.js";
 import { allocateRequirementIds } from "../lib/ingest.js";
 import type { SurfaceMap, UntrackedTest } from "../lib/types.js";
@@ -102,7 +103,36 @@ export function registerBackfillCommand(program: Command): void {
 			}
 
 			if (options.dryRun) {
-				printDryRunPreview(untracked, config, adapter, options);
+				if (options.json) {
+					const groups = groupUntrackedByDescribe(untracked);
+					populateImports(cwd, groups);
+					console.log(
+						formatJson({
+							dry_run: true,
+							total_tests: untracked.length,
+							total_files: byFile.size,
+							total_groups: groups.length,
+							groups: groups.map((g) => ({
+								file: g.file,
+								describe: g.describeLabel,
+								describe_line: g.describeLine,
+								tests: g.tests.map((t) => ({
+									line: t.line,
+									it: t.it,
+									describe: t.describe,
+									implementation: t.implementation.state,
+								})),
+								imported_modules: g.importedModules,
+								inferred: {
+									type: (options.type as string) ?? inferTestType(g.file, adapter),
+									area: (options.area as string) ?? inferArea(g.file, config.areas),
+								},
+							})),
+						}),
+					);
+				} else {
+					printDryRunPreview(untracked, config, adapter, options);
+				}
 				return;
 			}
 
