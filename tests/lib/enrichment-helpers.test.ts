@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
@@ -121,18 +122,18 @@ describe("findImportedModules", () => {
 		expect(findImportedModules(FIXTURES_DIR, "nonexistent.test.ts")).toEqual([]);
 	});
 
-	it("resolves relative imports against test file directory", () => {
-		// Test with a known file structure - the launchpad cli test imports from ../args.js
-		const launchpadDir = "/Users/ziadsawalha/code/launchpad";
-		const imports = findImportedModules(launchpadDir, "src/cli/__tests__/cli.test.ts");
+	it.skipIf(!existsSync("/Users/ziadsawalha/code/launchpad"))(
+		"resolves relative imports against test file directory",
+		() => {
+			const launchpadDir = "/Users/ziadsawalha/code/launchpad";
+			const imports = findImportedModules(launchpadDir, "src/cli/__tests__/cli.test.ts");
 
-		// Should find local imports like ../args.js and ../commands.js
-		expect(imports.length).toBeGreaterThan(0);
-		// All should be relative paths, not absolute
-		for (const imp of imports) {
-			expect(imp.startsWith("/")).toBe(false);
-		}
-	});
+			expect(imports.length).toBeGreaterThan(0);
+			for (const imp of imports) {
+				expect(imp.startsWith("/")).toBe(false);
+			}
+		},
+	);
 });
 
 // =============================================================================
