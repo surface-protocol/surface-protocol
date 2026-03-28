@@ -7,6 +7,7 @@
  */
 
 import { Command } from "commander";
+import { registerBadgeCommand } from "./surface-badge.js";
 import { registerCheckCommand } from "./surface-check.js";
 import { registerGenCommand } from "./surface-gen.js";
 import { registerInitCommand } from "./surface-init.js";
@@ -23,5 +24,6 @@ registerGenCommand(program);
 registerCheckCommand(program);
 registerQueryCommand(program);
 registerMetricsCommand(program);
+registerBadgeCommand(program);
 
 program.parse();
