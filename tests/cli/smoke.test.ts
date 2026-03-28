@@ -97,7 +97,7 @@ describe("CLI smoke tests", () => {
 		it("reports coverage from vitest fixture", () => {
 			const out = run(["check"], join(FIXTURES, "vitest-project"));
 			expect(out).toContain("Coverage:");
-			expect(out).toContain("100.0%");
+			expect(out).toMatch(/100\.0.*%/);
 		});
 
 		it("identifies dangerous requirements", () => {

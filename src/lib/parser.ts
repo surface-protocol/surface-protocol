@@ -248,6 +248,10 @@ export async function parseDirectory(
 			if (fileTests.length === 0 && options.includeGaps) {
 				gaps.push({ file: relative(dir, file), reason: "No metadata found" });
 			}
+			// Convert absolute paths to relative paths from project root
+			for (const t of fileTests) {
+				t.location.file = relative(dir, t.location.file);
+			}
 			tests.push(...fileTests);
 		} catch (error) {
 			if (options.includeGaps) {
