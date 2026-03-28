@@ -55,13 +55,82 @@ it("second test", () => {});
 `;
 		const blocks = extractAllYamlBlocks(content);
 		expect(blocks).toHaveLength(2);
-		expect((blocks[0]!.yaml as Record<string, unknown>).req).toBe("REQ-001");
-		expect((blocks[1]!.yaml as Record<string, unknown>).req).toBe("REQ-002");
+		expect((blocks[0]?.yaml as Record<string, unknown>).req).toBe("REQ-001");
+		expect((blocks[1]?.yaml as Record<string, unknown>).req).toBe("REQ-002");
 	});
 
 	it("returns empty array for content without YAML", () => {
 		const blocks = extractAllYamlBlocks("no yaml here");
 		expect(blocks).toHaveLength(0);
+	});
+
+	it("extracts tab-indented YAML blocks inside describe()", () => {
+		const content = `import { describe, it } from "vitest";
+describe("feature", () => {
+\t/*---
+\treq: REQ-010
+\ttype: unit
+\tsummary: Indented block
+\t---*/
+\tit("first test", () => {});
+
+\t/*---
+\treq: REQ-011
+\ttype: unit
+\tsummary: Second indented block
+\t---*/
+\tit("second test", () => {});
+});`;
+		const blocks = extractAllYamlBlocks(content);
+		expect(blocks).toHaveLength(2);
+		expect((blocks[0]?.yaml as Record<string, unknown>).req).toBe("REQ-010");
+		expect((blocks[1]?.yaml as Record<string, unknown>).req).toBe("REQ-011");
+	});
+
+	it("extracts space-indented YAML blocks", () => {
+		const content = `describe("feature", () => {
+    /*---
+    req: REQ-020
+    type: unit
+    summary: Space indented
+    ---*/
+    it("test", () => {});
+});`;
+		const blocks = extractAllYamlBlocks(content);
+		expect(blocks).toHaveLength(1);
+		expect((blocks[0]?.yaml as Record<string, unknown>).req).toBe("REQ-020");
+	});
+
+	it("parses YAML with unquoted braces in acceptance criteria", () => {
+		const content = `/*---
+req: REQ-030
+type: unit
+summary: Health check
+acceptance:
+  - GET /api/health returns 200 with { status: "ok" }
+  - POST /api/data accepts { name: "test" }
+tags: [server, api]
+---*/
+it("test", () => {});`;
+		const blocks = extractAllYamlBlocks(content);
+		expect(blocks).toHaveLength(1);
+		const yaml = blocks[0]?.yaml as Record<string, unknown>;
+		expect(yaml.req).toBe("REQ-030");
+		expect(yaml.acceptance).toHaveLength(2);
+	});
+
+	it("parses YAML with unquoted brackets in list items", () => {
+		const content = `\t/*---
+\treq: REQ-040
+\ttype: unit
+\tsummary: CLI parsing
+\tacceptance:
+\t  - Parses "launch <url>" into { command: "launch", args: [url] }
+\t---*/
+\tit("test", () => {});`;
+		const blocks = extractAllYamlBlocks(content);
+		expect(blocks).toHaveLength(1);
+		expect((blocks[0]?.yaml as Record<string, unknown>).req).toBe("REQ-040");
 	});
 });
 
@@ -85,11 +154,11 @@ describe("auth", () => {
 `;
 		const tests = parseTestFileContent(content, "auth.test.ts");
 		expect(tests).toHaveLength(1);
-		expect(tests[0]!.metadata.req).toBe("REQ-042");
-		expect(tests[0]!.metadata.area).toBe("auth");
-		expect(tests[0]!.location.file).toBe("auth.test.ts");
-		expect(tests[0]!.location.describe).toBe("auth");
-		expect(tests[0]!.location.it).toBe("requires valid credentials");
+		expect(tests[0]?.metadata.req).toBe("REQ-042");
+		expect(tests[0]?.metadata.area).toBe("auth");
+		expect(tests[0]?.location.file).toBe("auth.test.ts");
+		expect(tests[0]?.location.describe).toBe("auth");
+		expect(tests[0]?.location.it).toBe("requires valid credentials");
 	});
 
 	it("detects stub status for it.todo()", () => {
@@ -104,9 +173,9 @@ describe("feature", () => {
 });
 `;
 		const tests = parseTestFileContent(content, "test.ts");
-		expect(tests[0]!.implementation?.state).toBe("stub");
+		expect(tests[0]?.implementation?.state).toBe("stub");
 		// Detection source can be "it-todo" or "no-assertions" depending on window size
-		expect(["it-todo", "no-assertions"]).toContain(tests[0]!.implementation?.detected_from);
+		expect(["it-todo", "no-assertions"]).toContain(tests[0]?.implementation?.detected_from);
 	});
 
 	it("detects complete status for tests with assertions", () => {
@@ -123,7 +192,7 @@ describe("feature", () => {
 });
 `;
 		const tests = parseTestFileContent(content, "test.ts");
-		expect(tests[0]!.implementation?.state).toBe("complete");
+		expect(tests[0]?.implementation?.state).toBe("complete");
 	});
 });
 

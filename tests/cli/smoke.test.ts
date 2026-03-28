@@ -23,8 +23,29 @@ describe("CLI smoke tests", () => {
 			expect(out).toContain("init");
 			expect(out).toContain("gen");
 			expect(out).toContain("check");
+			expect(out).toContain("scan");
+			expect(out).toContain("backfill");
 			expect(out).toContain("query");
 			expect(out).toContain("metrics");
+		});
+	});
+
+	describe("surface scan --help", () => {
+		it("shows scan command options", () => {
+			const out = run(["scan", "--help"]);
+			expect(out).toContain("drift");
+			expect(out).toContain("--json");
+			expect(out).toContain("--exit-code");
+			expect(out).toContain("--untracked");
+		});
+	});
+
+	describe("surface backfill --help", () => {
+		it("shows backfill command options", () => {
+			const out = run(["backfill", "--help"]);
+			expect(out).toContain("--all");
+			expect(out).toContain("--dry-run");
+			expect(out).toContain("--file");
 		});
 	});
 
@@ -83,7 +104,7 @@ describe("CLI smoke tests", () => {
 			const out = run(["gen"], join(FIXTURES, "vitest-project"));
 			expect(out).toContain("surface.json");
 			expect(out).toContain("SURFACE.md");
-			expect(out).toContain("Total requirements: 3");
+			expect(out).toContain("Total requirements: 5");
 		});
 
 		it("generates surface map from rspec fixture", () => {
@@ -97,7 +118,7 @@ describe("CLI smoke tests", () => {
 		it("reports coverage from vitest fixture", () => {
 			const out = run(["check"], join(FIXTURES, "vitest-project"));
 			expect(out).toContain("Coverage:");
-			expect(out).toMatch(/100\.0.*%/);
+			expect(out).toContain("83.3");
 		});
 
 		it("identifies dangerous requirements", () => {

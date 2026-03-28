@@ -75,6 +75,92 @@ With no flags, runs all checks.
 
 ---
 
+## `surface scan`
+
+Detect drift between your test files and `surface.json`.
+
+Use this when code was written or tests were added outside the Surface Protocol workflow — it shows exactly what the protocol doesn't know about yet.
+
+```bash
+surface scan [options]
+```
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Machine-readable `DriftReport` JSON |
+| `--exit-code` | Exit 1 if any drift detected (opt-in CI gate) |
+| `--untracked` | Show only untracked tests (no YAML metadata) |
+| `--ghosts` | Show only ghost entries (deleted/renamed test files) |
+| `--status-drift` | Show only implementation status changes |
+| `--quiet` | Counts only, no per-item details |
+
+**Output categories:**
+- **Untracked tests** — `it()` blocks with no YAML frontmatter
+- **Ghost entries** — requirements in `surface.json` whose test files were deleted or renamed
+- **Status drift** — tests whose stub/complete status changed since last `surface gen`
+
+**Exit codes:** `0` = clean, `1` = drift + `--exit-code`, `2` = fatal error
+
+By default, `surface scan` exits 0 even when drift exists (informational). Use `--exit-code` to make it a CI gate.
+
+```bash
+# Informational (always exits 0)
+surface scan
+
+# CI gate — fails if any drift
+surface scan --exit-code
+
+# Only show untested tests
+surface scan --untracked
+```
+
+---
+
+## `surface backfill`
+
+Auto-annotate untracked tests with inferred YAML frontmatter. Use this to bootstrap Surface Protocol on an existing codebase, or to catch up after building features without the protocol.
+
+For **enriched metadata** (rationale, acceptance criteria, tags), use the `/surface:backfill` skill in Claude Code instead of the CLI. The CLI produces structural metadata only.
+
+```bash
+surface backfill [options]
+```
+
+| Option | Description |
+|--------|-------------|
+| `--all` | Backfill all untracked tests |
+| `--file <path>` | Backfill only one specific file |
+| `--dry-run` | Preview injections without writing |
+| `--dry-run --json` | Structured JSON output with test groups and imports (for skill consumption) |
+| `--yes` | Skip confirmation prompt (auto-implied in CI) |
+| `--no-gen` | Skip running `surface gen` after backfill |
+| `--type <type>` | Override inferred test type for all backfills |
+| `--area <area>` | Override inferred area for all backfills |
+| `--json` | JSON output |
+
+**Inference rules:**
+- `area` — inferred from path segments (`src/auth/` → `auth`)
+- `type` — inferred from path hints (`/e2e/` → `e2e`, default → `unit`)
+- `summary` — cleaned from test label + describe context
+- `id` — auto-allocated from `.surface/state/id-counter`
+- `source.type` — set to `implementation` (signals "inferred, needs human review")
+
+**Backfilled annotations are drafts.** Review summaries, areas, and add acceptance criteria after backfilling.
+
+```bash
+# Bootstrap: preview all, then write
+surface backfill --all --dry-run
+surface backfill --all --yes
+
+# Backfill one file
+surface backfill --file tests/auth/login.test.ts
+
+# Structured JSON for the /surface:backfill skill
+surface backfill --all --dry-run --json
+```
+
+---
+
 ## `surface query`
 
 Query requirements from `surface.json`.
