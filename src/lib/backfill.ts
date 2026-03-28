@@ -221,6 +221,8 @@ export async function injectYamlIntoFile(
 
 /**
  * Pure function: insert yamlBlock before insertBeforeLine in content string.
+ * Matches the indentation of the target line so injected blocks align
+ * with the surrounding code (e.g. inside a describe() block).
  * Exported for testing.
  */
 export function injectYamlIntoContent(
@@ -231,8 +233,19 @@ export function injectYamlIntoContent(
 	const lines = content.split("\n");
 	const idx = insertBeforeLine - 1; // 0-indexed
 
-	// Insert: blank line + yamlBlock + blank line at idx
-	const insertion = ["", yamlBlock, ""];
+	// Detect indentation of the target it() line
+	const targetLine = lines[idx] ?? "";
+	const indentMatch = targetLine.match(/^([ \t]*)/);
+	const indent = indentMatch ? indentMatch[1] : "";
+
+	// Indent every line of the YAML block to match
+	const indentedBlock = yamlBlock
+		.split("\n")
+		.map((line) => (line.length > 0 ? `${indent}${line}` : line))
+		.join("\n");
+
+	// Insert: blank line + indented block + blank line at idx
+	const insertion = ["", indentedBlock, ""];
 	lines.splice(idx, 0, ...insertion);
 
 	return lines.join("\n");
