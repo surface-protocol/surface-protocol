@@ -9,6 +9,7 @@
 import { Command } from "commander";
 import { registerBadgeCommand } from "./surface-badge.js";
 import { registerBackfillCommand } from "./surface-backfill.js";
+import { registerBadgeCommand } from "./surface-badge.js";
 import { registerCheckCommand } from "./surface-check.js";
 import { registerGenCommand } from "./surface-gen.js";
 import { registerInitCommand } from "./surface-init.js";
