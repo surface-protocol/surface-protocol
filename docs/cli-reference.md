@@ -120,6 +120,8 @@ surface scan --untracked
 
 Auto-annotate untracked tests with inferred YAML frontmatter. Use this to bootstrap Surface Protocol on an existing codebase, or to catch up after building features without the protocol.
 
+For **enriched metadata** (rationale, acceptance criteria, tags), use the `/surface:backfill` skill in Claude Code instead of the CLI. The CLI produces structural metadata only.
+
 ```bash
 surface backfill [options]
 ```
@@ -129,6 +131,7 @@ surface backfill [options]
 | `--all` | Backfill all untracked tests |
 | `--file <path>` | Backfill only one specific file |
 | `--dry-run` | Preview injections without writing |
+| `--dry-run --json` | Structured JSON output with test groups and imports (for skill consumption) |
 | `--yes` | Skip confirmation prompt (auto-implied in CI) |
 | `--no-gen` | Skip running `surface gen` after backfill |
 | `--type <type>` | Override inferred test type for all backfills |
@@ -151,6 +154,9 @@ surface backfill --all --yes
 
 # Backfill one file
 surface backfill --file tests/auth/login.test.ts
+
+# Structured JSON for the /surface:backfill skill
+surface backfill --all --dry-run --json
 ```
 
 ---

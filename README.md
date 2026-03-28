@@ -163,7 +163,7 @@ When code is built or modified outside the protocol, use these commands to detec
 | Command | Description |
 |---------|-------------|
 | `/surface:scan` | Detect drift: untracked tests, ghost entries, status changes |
-| `/surface:backfill` | Auto-annotate untracked tests with inferred YAML metadata |
+| `/surface:backfill` | Smart backfill: groups tests, reads code, generates rationale + acceptance criteria |
 
 **Common scenario — adopting Surface Protocol on an existing codebase:**
 
@@ -171,9 +171,11 @@ When code is built or modified outside the protocol, use these commands to detec
 # 1. Find tests without surface metadata
 npx surface scan
 
-# 2. Auto-annotate existing tests
-npx surface backfill --all --dry-run   # preview
-npx surface backfill --all --yes       # write
+# 2. Smart backfill (in Claude Code — generates rich metadata)
+/surface:backfill
+
+# Or fast CLI backfill (bare-bones metadata only)
+npx surface backfill --all --yes
 
 # 3. Regenerate surface.json
 npx surface gen

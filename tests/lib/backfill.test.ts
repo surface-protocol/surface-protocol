@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+	buildEnrichedYamlBlock,
 	buildYamlBlock,
 	generateSummaryFromLabel,
 	inferArea,
@@ -119,6 +120,101 @@ describe("buildYamlBlock", () => {
 		for (const line of contentLines) {
 			expect(line).toMatch(/^# /);
 		}
+	});
+});
+
+// =============================================================================
+// buildEnrichedYamlBlock
+// =============================================================================
+
+describe("buildEnrichedYamlBlock", () => {
+	it("includes rationale as multi-line literal block", () => {
+		const block = buildEnrichedYamlBlock(
+			{
+				req: "REQ-001",
+				type: "unit",
+				area: "cli",
+				summary: "CLI server configuration",
+				rationale: "The CLI needs flexible server config.\nSupports local and remote modes.",
+			},
+			JS_BLOCK,
+		);
+		expect(block).toContain("rationale: |");
+		expect(block).toContain("  The CLI needs flexible server config.");
+		expect(block).toContain("  Supports local and remote modes.");
+	});
+
+	it("includes acceptance criteria as YAML array", () => {
+		const block = buildEnrichedYamlBlock(
+			{
+				req: "REQ-001",
+				type: "unit",
+				summary: "Test",
+				acceptance: ["Returns flag value when provided", "Falls back to default"],
+			},
+			JS_BLOCK,
+		);
+		expect(block).toContain("acceptance:");
+		expect(block).toContain("  - Returns flag value when provided");
+		expect(block).toContain("  - Falls back to default");
+	});
+
+	it("includes tags as inline YAML array", () => {
+		const block = buildEnrichedYamlBlock(
+			{ req: "REQ-001", type: "unit", summary: "Test", tags: ["cli", "core"] },
+			JS_BLOCK,
+		);
+		expect(block).toContain("tags: [cli, core]");
+	});
+
+	it("produces parseable YAML that round-trips through extractAllYamlBlocks", () => {
+		const block = buildEnrichedYamlBlock(
+			{
+				req: "REQ-042",
+				type: "unit",
+				area: "auth",
+				summary: "Login validates credentials",
+				rationale: "Core auth flow.\nMust validate before issuing tokens.",
+				acceptance: ["Valid credentials return session token", "Invalid credentials return 401"],
+				tags: ["auth", "security"],
+			},
+			JS_BLOCK,
+		);
+
+		const blocks = extractAllYamlBlocks(block);
+		expect(blocks).toHaveLength(1);
+		const yaml = blocks[0]?.yaml as Record<string, unknown>;
+		expect(yaml.req).toBe("REQ-042");
+		expect(yaml.area).toBe("auth");
+		expect(yaml.rationale).toContain("Core auth flow.");
+		expect(yaml.acceptance).toHaveLength(2);
+		expect(yaml.tags).toEqual(["auth", "security"]);
+	});
+
+	it("omits rationale, acceptance, tags when not provided", () => {
+		const block = buildEnrichedYamlBlock(
+			{ req: "REQ-001", type: "unit", summary: "Simple test" },
+			JS_BLOCK,
+		);
+		expect(block).not.toContain("rationale:");
+		expect(block).not.toContain("acceptance:");
+		expect(block).not.toContain("tags:");
+	});
+
+	it("quotes acceptance criteria with special YAML characters", () => {
+		const block = buildEnrichedYamlBlock(
+			{
+				req: "REQ-001",
+				type: "unit",
+				summary: "Test",
+				acceptance: ['Returns { status: "ok" }'],
+			},
+			JS_BLOCK,
+		);
+		// The criterion should be quoted because of braces
+		expect(block).toContain("acceptance:");
+		const blocks = extractAllYamlBlocks(block);
+		expect(blocks).toHaveLength(1);
 	});
 });
 

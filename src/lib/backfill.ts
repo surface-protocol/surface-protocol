@@ -199,6 +199,81 @@ export function buildYamlBlock(metadata: Partial<TestMetadata>, format: CommentF
 	return `${format.openLiteral}${yamlContent}${format.closeLiteral}`;
 }
 
+/**
+ * Build an enriched YAML frontmatter string with rationale, acceptance, and tags.
+ * Used by the /surface:backfill skill for intelligent backfill.
+ */
+export function buildEnrichedYamlBlock(
+	metadata: Partial<TestMetadata> & {
+		rationale?: string;
+		acceptance?: string[];
+		tags?: string[];
+	},
+	format: CommentFormat,
+): string {
+	const today = new Date().toISOString().slice(0, 10);
+
+	const lines: string[] = [];
+
+	// ID field
+	if (metadata.req) lines.push(`req: ${metadata.req}`);
+	else if (metadata.flow) lines.push(`flow: ${metadata.flow}`);
+	else if (metadata.smoke) lines.push(`smoke: ${metadata.smoke}`);
+	else if (metadata.regr) lines.push(`regr: ${metadata.regr}`);
+	else if (metadata.contract) lines.push(`contract: ${metadata.contract}`);
+	else if (metadata.sec) lines.push(`sec: ${metadata.sec}`);
+	else if (metadata.perf) lines.push(`perf: ${metadata.perf}`);
+
+	lines.push(`type: ${metadata.type ?? "unit"}`);
+	lines.push("status: active");
+	if (metadata.area) lines.push(`area: ${metadata.area}`);
+	lines.push(`summary: ${yamlSafeValue(metadata.summary ?? "Backfilled requirement")}`);
+
+	// Rationale (multi-line literal block)
+	if (metadata.rationale) {
+		lines.push("rationale: |");
+		for (const rLine of metadata.rationale.split("\n")) {
+			lines.push(`  ${rLine}`);
+		}
+	}
+
+	// Acceptance criteria
+	if (metadata.acceptance && metadata.acceptance.length > 0) {
+		lines.push("acceptance:");
+		for (const criterion of metadata.acceptance) {
+			lines.push(`  - ${yamlSafeValue(criterion)}`);
+		}
+	}
+
+	// Tags
+	if (metadata.tags && metadata.tags.length > 0) {
+		lines.push(`tags: [${metadata.tags.join(", ")}]`);
+	}
+
+	// Source
+	lines.push("source:");
+	lines.push("  type: implementation");
+	lines.push("  ref: implementation-discovery");
+
+	// Changed
+	lines.push("changed:");
+	lines.push(`  - date: ${today}`);
+	lines.push("    commit: pending");
+	lines.push("    note: Backfilled by surface backfill — review and update");
+
+	const yamlContent = lines.join("\n");
+
+	if (format.linePrefix) {
+		const prefixed = yamlContent
+			.split("\n")
+			.map((l) => `${format.linePrefix}${l}`)
+			.join("\n");
+		return `${format.openLiteral}${prefixed}${format.closeLiteral}`;
+	}
+
+	return `${format.openLiteral}${yamlContent}${format.closeLiteral}`;
+}
+
 // =============================================================================
 // File Injection
 // =============================================================================
