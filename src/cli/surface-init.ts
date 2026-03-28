@@ -6,11 +6,12 @@
  */
 
 import { existsSync } from "node:fs";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import chalk from "chalk";
 import type { Command } from "commander";
 import { getAdapterNames } from "../lib/adapters/index.js";
+import { shieldsBadgeMarkdown } from "../lib/badge.js";
 import { configExists } from "../lib/config.js";
 import { formatJson } from "../lib/formatters.js";
 import type { SurfaceMap } from "../lib/types.js";
@@ -120,6 +121,28 @@ export function registerInitCommand(program: Command): void {
 				await writeFile(claudeMdPath, CLAUDE_SNIPPET, "utf-8");
 			}
 
+			// Add badge to README.md if it exists and doesn't already have one
+			const readmePath = join(cwd, "README.md");
+			let badgeAdded = false;
+			if (existsSync(readmePath)) {
+				const readmeContent = await readFile(readmePath, "utf-8");
+				if (!readmeContent.includes("surface-protocol")) {
+					const badge = shieldsBadgeMarkdown();
+					const badgeLine = `\n${badge}\n\nBuilt with [Surface Protocol](https://github.com/surface-protocol/surface-protocol) — tests are the spec.\n`;
+					const headingMatch = readmeContent.match(/^#[^\n]*\n/m);
+					let updatedReadme: string;
+					if (headingMatch && headingMatch.index !== undefined) {
+						const insertPos = headingMatch.index + headingMatch[0].length;
+						updatedReadme =
+							readmeContent.slice(0, insertPos) + badgeLine + readmeContent.slice(insertPos);
+					} else {
+						updatedReadme = badgeLine + readmeContent;
+					}
+					await writeFile(readmePath, updatedReadme, "utf-8");
+					badgeAdded = true;
+				}
+			}
+
 			console.log(chalk.green(`Initialized Surface Protocol in ${cwd}`));
 			console.log();
 			console.log("  Created:");
@@ -131,6 +154,9 @@ export function registerInitCommand(program: Command): void {
 			console.log(`    ${chalk.cyan(".surface/")}                      — state directory`);
 			if (!existsSync(claudeMdPath)) {
 				console.log(`    ${chalk.cyan("CLAUDE.md")}                      — routing stub`);
+			}
+			if (badgeAdded) {
+				console.log(`    ${chalk.cyan("README.md")}                      — badge added`);
 			}
 			console.log();
 			console.log("  Next steps:");

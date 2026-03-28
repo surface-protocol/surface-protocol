@@ -8,6 +8,7 @@ import { mkdir, readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import chalk from "chalk";
 import type { Command } from "commander";
+import { buildBadgeEndpoint } from "../lib/badge.js";
 import { loadConfig } from "../lib/config.js";
 import {
 	buildSmokeVerificationMap,
@@ -293,10 +294,16 @@ export function registerGenCommand(program: Command): void {
 					featureDocPaths.push(featurePath);
 				}
 
+				// Write surface-badge.json (shields.io endpoint format)
+				const badgePath = join(outputDir, "surface-badge.json");
+				const badgeEndpoint = buildBadgeEndpoint(surfaceMap.stats);
+				await writeIfContentChanged(badgePath, `${formatJson(badgeEndpoint)}\n`);
+
 				if (!quiet) {
 					console.log(chalk.green("Generated:"));
 					console.log(`  ${jsonPath}`);
 					console.log(`  ${mdPath}`);
+					console.log(`  ${badgePath}`);
 					for (const fp of featureDocPaths) console.log(`  ${fp}`);
 					console.log("");
 					console.log(`Total requirements: ${surfaceMap.stats.total}`);

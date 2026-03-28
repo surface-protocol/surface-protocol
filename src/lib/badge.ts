@@ -1,0 +1,137 @@
+/**
+ * Badge generation for Surface Protocol
+ *
+ * Generates shields.io endpoint JSON and markdown snippets for
+ * "built with" and dynamic coverage badges.
+ */
+
+import type { SurfaceMapStats } from "./types.js";
+
+// =============================================================================
+// Types
+// =============================================================================
+
+export interface ShieldsEndpoint {
+	schemaVersion: 1;
+	label: string;
+	message: string;
+	color: string;
+}
+
+export type BadgeFormat = "shields" | "custom" | "endpoint";
+
+// =============================================================================
+// Badge Logo (base64-encoded simplified SVG)
+// =============================================================================
+
+/** Base64-encoded 16x16 monochrome surface mesh logo for shields.io */
+export const BADGE_LOGO_BASE64 =
+	"PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ij4KICA8IS0tIFNpbXBsaWZpZWQgc3VyZmFjZSBtZXNoOiB0b3AgZGlhbW9uZCArIDMgbm9kZXMgLS0+CiAgPHBhdGggZD0iTTEuNSA4IEw4IDExIEwxNC41IDggTDExIDQuNSBMNSA0LjUgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8Y2lyY2xlIGN4PSI4IiBjeT0iNC41IiByPSIxLjMiIGZpbGw9IndoaXRlIi8+CiAgPGNpcmNsZSBjeD0iNSIgY3k9IjQuNSIgcj0iMSIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSIxMSIgY3k9IjQuNSIgcj0iMSIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSIxLjUiIGN5PSI4IiByPSIwLjkiIGZpbGw9IndoaXRlIi8+CiAgPGNpcmNsZSBjeD0iMTQuNSIgY3k9IjgiIHI9IjAuOSIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSI4IiBjeT0iMTEiIHI9IjAuOSIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==";
+
+const REPO_URL = "https://github.com/surface-protocol/surface-protocol";
+const RAW_BASE = "https://raw.githubusercontent.com/surface-protocol/surface-protocol/main";
+const BRAND_COLOR = "6C3CE1";
+
+// =============================================================================
+// Coverage Color Scale
+// =============================================================================
+
+export function coverageColor(percent: number): string {
+	if (percent >= 90) return "brightgreen";
+	if (percent >= 75) return "green";
+	if (percent >= 50) return "yellow";
+	if (percent >= 25) return "orange";
+	return "red";
+}
+
+// =============================================================================
+// Coverage Percentage
+// =============================================================================
+
+export function coveragePercent(stats: SurfaceMapStats): number {
+	const total = stats.coverage.with_metadata + stats.coverage.without_metadata;
+	if (total === 0) return 0;
+	return Math.round((stats.coverage.with_metadata / total) * 100);
+}
+
+// =============================================================================
+// Shields.io Endpoint JSON
+// =============================================================================
+
+export function buildBadgeEndpoint(stats: SurfaceMapStats): ShieldsEndpoint {
+	const percent = coveragePercent(stats);
+	return {
+		schemaVersion: 1,
+		label: "surface coverage",
+		message: `${percent}%`,
+		color: coverageColor(percent),
+	};
+}
+
+// =============================================================================
+// Badge URLs
+// =============================================================================
+
+export function shieldsBadgeUrl(): string {
+	return `https://img.shields.io/badge/built%20with-Surface%20Protocol-${BRAND_COLOR}?style=flat&logo=data:image/svg%2bxml;base64,${BADGE_LOGO_BASE64}&logoColor=white`;
+}
+
+export function customBadgeUrl(): string {
+	return `${RAW_BASE}/assets/badges/built-with-surface-protocol.svg`;
+}
+
+export function endpointBadgeUrl(owner: string, repo: string, branch = "main"): string {
+	const jsonUrl = encodeURIComponent(
+		`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/surface-badge.json`,
+	);
+	return `https://img.shields.io/endpoint?url=${jsonUrl}`;
+}
+
+// =============================================================================
+// Markdown Snippets
+// =============================================================================
+
+export function shieldsBadgeMarkdown(): string {
+	return `[![Built with Surface Protocol](${shieldsBadgeUrl()})](${REPO_URL})`;
+}
+
+export function customBadgeMarkdown(): string {
+	return `[![Built with Surface Protocol](${customBadgeUrl()})](${REPO_URL})`;
+}
+
+export function endpointBadgeMarkdown(owner: string, repo: string, branch = "main"): string {
+	return `[![Surface Coverage](${endpointBadgeUrl(owner, repo, branch)})](${REPO_URL})`;
+}
+
+export function allBadgeSnippets(owner?: string, repo?: string): string {
+	const lines = [
+		"## Surface Protocol Badges",
+		"",
+		"### Static badge (shields.io)",
+		"",
+		"```markdown",
+		shieldsBadgeMarkdown(),
+		"```",
+		"",
+		"### Custom gradient badge",
+		"",
+		"```markdown",
+		customBadgeMarkdown(),
+		"```",
+	];
+
+	if (owner && repo) {
+		lines.push(
+			"",
+			"### Dynamic coverage badge",
+			"",
+			"Requires `surface-badge.json` in your repo (auto-generated by `surface gen`).",
+			"",
+			"```markdown",
+			endpointBadgeMarkdown(owner, repo),
+			"```",
+		);
+	}
+
+	return lines.join("\n");
+}
